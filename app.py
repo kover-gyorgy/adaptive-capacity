@@ -51,6 +51,7 @@ subjects = pourff123.ID.unique()
 
 
 app = dash.Dash()
+server = app.server
 app.title = 'adaptive capacity'
 
 app.layout = html.Div([
