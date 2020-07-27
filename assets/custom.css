@@ -17,6 +17,18 @@ z-index: 99999999;
 border: 2px solid rgb(2, 21, 70);
 }
 
+#dropdown-controls2 .Select-control {
+border: 2px solid rgb(2, 21, 70);
+}
+
+#dropdown-controls3 .Select-control {
+border: 2px solid rgb(2, 21, 70);
+}
+
+#dropdown-controls4 .Select-control {
+border: 2px solid rgb(2, 21, 70);
+}
+
 .scroll-to-top-container {
 margin-left: 10px;
 }
@@ -90,7 +102,7 @@ vertical-align: super;
   background: rgb(2, 21, 70);
   color: white;
   font-size: 20px;
-  margin-bottom: 30px;
+  margin-bottom: 10px;
 }
 
 .pkcalc-settings {
@@ -162,3 +174,40 @@ th {
     sans-serif;
   font-size: 12px;
 }
+
+Kristóf Kövér <kkrisst@gmail.com> ezt írta (idõpont: 2020. jún. 10., Sze, 20:32):
+
+    app.layout = html.Div([
+        html.Div(
+            className="pkcalc-banner",
+            children=[
+                html.H2("Quantification of animal adaptive capacity"),
+            ],
+        ),
+        html.Div(
+            [
+                dcc.Dropdown(
+                    id="PKSubject",
+                    options=[{
+                        'label': i,
+                        'value': i
+                    } for i in subjects],
+                    value='51180'),
+            ],
+            style={'width': '25%',
+                   'display': 'inline-block'}),
+        dcc.Graph(id='BCS-graph',
+                    config={
+                       'displayModeBar': False
+                    }),
+        html.Div(
+            [
+                dash_table.DataTable(
+                    id='table',
+                    columns=[{"name": i, "id": i} for i in pkdata.columns],
+                    data=pkdata.to_dict('records'),
+                    style_header=table_header_style,
+                )
+            ],
+            )
+    ])

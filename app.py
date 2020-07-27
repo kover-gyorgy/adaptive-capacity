@@ -1,11 +1,8 @@
 # -*- coding: utf-8 -*-
-"""
-Created on Mon Jun  8 22:25:45 2020
 
-@author: Kövér György
-"""
-
+import uuid
 import os
+import flask
 import pathlib as pl
 import dash
 import dash_core_components as dcc
@@ -22,23 +19,14 @@ import matplotlib
 import matplotlib.cm
 import scipy
 from scipy.integrate import solve_ivp
-
-# external JavaScript files
-external_scripts = [
-    { "src": "https://use.fontawesome.com/ca367b0f57.js" },
-    {
-        "src": "https://code.jquery.com/jquery-3.5.1.min.js",
-        "integrity": "sha256-9/aliU8dGd2tb6OSsuzixeV4y/faTqgFtohetphbbj0=",
-        "crossorigin": "anonymous"
-    },
-]
-
-# external CSS stylesheets
-external_stylesheets = [
-    "assets/font-awesome.min.css"
-]
+from dash.dependencies import Input, Output, State
+import zipfile
+from os.path import basename
 
 
+app = dash.Dash(__name__, external_scripts=[
+  'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML',
+])
 
 table_header_style = {
     "backgroundColor": "rgb(2,21,70)",
@@ -47,6 +35,15 @@ table_header_style = {
 }
 
 APP_PATH = str(pl.Path(__file__).parent.resolve())
+
+downloadable_BCSData_csv    = "downloadable/BCSData.csv"
+downloadable_parameters_csv = "downloadable/parameters.csv"
+downloadable_BCSSim_csv     = "downloadable/BCSSim.csv"
+downloadable_BCSDataSim_zip = "downloadable/BCSDataSim.zip"
+
+downloadable_groupCorrMatrix_csv     = "downloadable/corrMatrix.csv"
+downloadable_groupParameters_csv     = "downloadable/groupParameters.csv"
+downloadable_BiVar_zip = "downloadable/BiVar.zip"
 
 pourcorr3 = pd.read_csv(os.path.join(APP_PATH, os.path.join("data", "pourcorr3.csv")))
 fichierfinal = pd.read_csv(os.path.join(APP_PATH, os.path.join("data", "fichierfinal.csv")))
@@ -59,6 +56,8 @@ paramCor['DT2'] = paramCor['te2']-paramCor['tb2']
 paramCor['DT3'] = paramCor['te3']-paramCor['tb3']
 
 paramCor_Orig = paramCor.copy()
+paramCorBiVar = paramCor.copy()
+paramCorHist  = paramCor.copy()
  
 
 #days of measures for p1, p2 and p3 
@@ -117,34 +116,33 @@ def BCSModel2(Time, State, kb1, kb2, kb3, kp1, kp2, kp3):
     return([ dBCS1,dBCS2,dBCS3,dP1,dP2,dP3,dBCS])
     
 def descriptives():    
-    data = [['Mean',paramCor.kb1.mean()*1000,paramCor.kb2.mean()*1000,paramCor.kb3.mean()*1000,paramCor.kp1.mean()*1000,paramCor.kp2.mean()*1000,paramCor.kp3.mean()*1000,paramCor.res.mean()],
-            ['Sd',paramCor.kb1.std()*1000,paramCor.kb2.std()*1000,paramCor.kb3.std()*1000,paramCor.kp1.std()*1000,paramCor.kp2.std()*1000,paramCor.kp3.std()*1000,paramCor.res.std()],
-            ['Min',paramCor.kb1.min()*1000,paramCor.kb2.min()*1000,paramCor.kb3.min()*1000,paramCor.kp1.min()*1000,paramCor.kp2.min()*1000,paramCor.kp3.min()*1000,paramCor.res.min()],
-            ['Max',paramCor.kb1.max()*1000,paramCor.kb2.max()*1000,paramCor.kb3.max()*1000,paramCor.kp1.max()*1000,paramCor.kp2.max()*1000,paramCor.kp3.max()*1000,paramCor.res.max()],
-            ['Q1',paramCor.kb1.quantile(0.25)*1000,paramCor.kb2.quantile(0.25)*1000,paramCor.kb3.quantile(0.25)*1000,paramCor.kp1.quantile(0.25)*1000,paramCor.kp2.quantile(0.25)*1000,paramCor.kp3.quantile(0.25),paramCor.res.quantile(0.25)],
-            ['Median',paramCor.kb1.median()*1000,paramCor.kb2.median(),paramCor.kb3.median()*1000,paramCor.kp1.median()*1000,paramCor.kp2.median()*1000,paramCor.kp3.median()*1000,paramCor.res.median()],
-            ['Q3',paramCor.kb1.quantile(0.75)*1000,paramCor.kb2.quantile(0.75)*1000,paramCor.kb3.quantile(0.75)*1000,paramCor.kp1.quantile(0.75)*1000,paramCor.kp2.quantile(0.75)*1000,paramCor.kp3.quantile(0.75)*1000,paramCor.res.quantile(0.75)]
+    data = [['Mean',paramCorHist.kb1.mean()*1000,paramCorHist.kb2.mean()*1000,paramCorHist.kb3.mean()*1000,paramCorHist.kp1.mean()*1000,paramCorHist.kp2.mean()*1000,paramCorHist.kp3.mean()*1000,paramCorHist.DT1.mean(),paramCorHist.DT2.mean(),paramCorHist.DT3.mean(),paramCorHist.res.mean()],
+            ['Sd',paramCorHist.kb1.std()*1000,paramCorHist.kb2.std()*1000,paramCorHist.kb3.std()*1000,paramCorHist.kp1.std()*1000,paramCorHist.kp2.std()*1000,paramCorHist.kp3.std()*1000,paramCorHist.DT1.std(),paramCorHist.DT2.std(),paramCorHist.DT3.std(),paramCorHist.res.std()],
+            ['Min',paramCorHist.kb1.min()*1000,paramCorHist.kb2.min()*1000,paramCorHist.kb3.min()*1000,paramCorHist.kp1.min()*1000,paramCorHist.kp2.min()*1000,paramCorHist.kp3.min()*1000,paramCorHist.DT1.min(),paramCorHist.DT2.min(),paramCorHist.DT3.min(),paramCorHist.res.min()],
+            ['Max',paramCorHist.kb1.max()*1000,paramCorHist.kb2.max()*1000,paramCorHist.kb3.max()*1000,paramCorHist.kp1.max()*1000,paramCorHist.kp2.max()*1000,paramCorHist.kp3.max()*1000,paramCorHist.DT1.max(),paramCorHist.DT2.max(),paramCorHist.DT3.max(),paramCorHist.res.max()]
           ]
-    lParanalKbkp = pd.DataFrame(data,columns=['stat','kb1','kb2','kb3','kp1','kp2','kp3','RSS'])   
+    lParanalKbkpTime = pd.DataFrame(data,columns=['stat','kb1','kb2','kb3','kp1','kp2','kp3','DT1','DT2','DT3','RSS'])   
  
-    data = [['Mean',paramCor.tb1.mean(),paramCor.tb2.mean(),paramCor.tb3.mean(),paramCor.DT1.mean(),paramCor.DT2.mean(),paramCor.DT3.mean()],
-            ['Sd' ,paramCor.tb1.std(),paramCor.tb2.std(),paramCor.tb3.std(),paramCor.DT1.std(),paramCor.DT2.std(),paramCor.DT3.std()],
-            ['Min',paramCor.tb1.min(),paramCor.tb2.min(),paramCor.tb3.min(),paramCor.DT1.min(),paramCor.DT2.min(),paramCor.DT3.min()],
-            ['Max',paramCor.tb1.max(),paramCor.tb2.max(),paramCor.tb3.max(),paramCor.DT1.max(),paramCor.DT2.max(),paramCor.DT3.max()],
-            ['Q1',paramCor.tb1.quantile(0.25),paramCor.tb2.quantile(0.25),paramCor.tb3.quantile(0.25),paramCor.DT1.quantile(0.25),paramCor.DT2.quantile(0.25),paramCor.DT3.quantile(0.25)],
-            ['Median',paramCor.tb1.median(),paramCor.tb2.median(),paramCor.tb3.median(),paramCor.DT1.median(),paramCor.DT2.median(),paramCor.DT3.median()],
-            ['Q3',paramCor.tb1.quantile(0.75),paramCor.tb2.quantile(0.75),paramCor.tb3.quantile(0.75),paramCor.DT1.quantile(0.75),paramCor.DT2.quantile(0.75),paramCor.DT3.quantile(0.75)]
-          ]
-    lParanalTime = pd.DataFrame(data,columns=['stat','tb1','tb2','tb3','DT1','DT2','DT3'])  
-    return lParanalKbkp, lParanalTime
+    return lParanalKbkpTime
 
-ParanalKbkp, ParanalTime = descriptives()
-
-xT = ['kb1', 'kb2', 'kb3', 'kp1', 'kp2', 'kp3', 'DT1', 'DT2', 'DT3']
+ParanalKbkpTime = descriptives()
+                                                 
+xTv = ['kb1', 'kb2', 'kb3', 'kp1', 'kp2', 'kp3', 'DT1', 'DT2', 'DT3']
+xT = ['$ k_{b}^{1} $', '$ k_{b}^{2} $', '$ k_{b}^{3} $', '$ k_{p}^{1} $', '$ k_{p}^{2} $', '$ k_{p}^{3} $', ' $\Delta T^1$ ', ' $\Delta T^2$ ', ' $\Delta T^3$ ']
 
 def heat_plot(): 
-    paramCorDrop = paramCor[['kb1', 'kb2', 'kb3', 'kp1', 'kp2', 'kp3', 'DT1', 'DT2', 'DT3']]
+    paramCorDrop = paramCorBiVar[['kb1', 'kb2', 'kb3', 'kp1', 'kp2', 'kp3', 'DT1', 'DT2', 'DT3']]
     corrMatrix  = paramCorDrop.corr()
+    
+    header = ['ID','kb1', 'kb2', 'kb3', 'kp1', 'kp2', 'kp3', 'DT1', 'DT2', 'DT3']
+    paramCorBiVar.to_csv(downloadable_groupParameters_csv,columns = header,index=False)
+    corrMatrix.to_csv(downloadable_groupCorrMatrix_csv)
+    
+    lista_files = [downloadable_groupParameters_csv,downloadable_groupCorrMatrix_csv]
+    with zipfile.ZipFile(downloadable_BiVar_zip, 'w') as zipMe:        
+        for file in lista_files:
+            zipMe.write(file,basename(file), compress_type=zipfile.ZIP_DEFLATED)
+            
     cM = corrMatrix.copy()
     npcM = cM.to_numpy()
     ZZ = np.zeros((9,9))+0.0
@@ -203,10 +201,11 @@ def heat_plot():
                         y=xT,
                         z=ZZ, #npcM, 
                         text=npcMS,
+                        showlegend=False,
                         hovertemplate =
-                        '<br>X: %{x}<br>'+
-                        '<br>Y: %{y}<br>'+
-                        '<br>r: %{text}<br>',
+                     #   '<br>X: %{x}<br>'+
+                     #   '<br>Y: %{y}<br>'+
+                        '<br>r: %{text}<br><extra></extra>',
                         #text = ['0.5'],
                         xgap=1,
                         ygap=1,
@@ -252,8 +251,8 @@ def heat_plot():
         xaxis_visible=False,
         yaxis_visible=False,
         autosize=False,
-        width=700,
-        height=700
+        width=600,
+        height=600
     )
     
     xa1 = []
@@ -303,12 +302,12 @@ subjects = paramCor.ID.unique()
     
 
 def scatter_plot():
-    scX = paramCor[sc_X] * 1000 
-    scY = paramCor[sc_Y] * 1000
+    scX = paramCorBiVar[sc_X] * 1000 
+    scY = paramCorBiVar[sc_Y] * 1000
     if sc_X in ['DT1', 'DT2', 'DT3']:
-        scX = paramCor[sc_X] 
+        scX = paramCorBiVar[sc_X] 
     if sc_Y in ['DT1', 'DT2', 'DT3']:
-        scY = paramCor[sc_Y]
+        scY = paramCorBiVar[sc_Y]
         
     figure = go.Figure(data=go.Scatter(x=scX, y=scY, mode='markers',showlegend=False, name='BCS',
         marker=dict(
@@ -319,48 +318,65 @@ def scatter_plot():
                 width=1
             )
         )))
-    figure.update_layout(xaxis_title=sc_X, yaxis_title=sc_Y)
+    figure.update_layout(xaxis_title=xT[xTv.index(sc_X)], yaxis_title=xT[xTv.index(sc_Y)])
+    figure.update_layout(title='Scatter Plot of \\( \Delta k_b\\) and \\(k_p\\) 67')
+    #figure.update_layout(title='Scatter Plot of $$k_b$$ and $$k_p$$')
+    figure.update_layout(title='Scatter Plot')
     figure.update_layout(
         title={
-        'text': 'Scatter Plot',
+        #'text': 'Scatter Plot of \(k_b\) and \(k_p\) 67',
+        #'text': 'Scatter Plot of $'+xT[xTv.index(sc_Y)]+'$ and $'+xT[xTv.index(sc_X)]+'$', 
         'y':0.9,
         'x':0.5,
         'xanchor': 'center',
         'yanchor': 'top'},
-        width=700,
-        height=700)
+        width=600,
+        height=600)
         
     return figure
 
 
 def hist_graph(name):
-    
+    print(name)
     if name== 'kb1': 
-        xx = paramCor.kb1*1000
+        xx = paramCorHist.kb1*1000
+        nameTex = '$ k_{b}^{1} $'
     if name== 'kb2': 
-        xx = paramCor.kb2*1000
+        xx = paramCorHist.kb2*1000
+        nameTex = '$ k_{b}^{2} $'
     if name== 'kb3': 
-        xx = paramCor.kb3*1000
+        xx = paramCorHist.kb3*1000
+        nameTex = '$ k_{b}^{3} $'
     if name== 'kp1': 
-        xx = paramCor.kp1*1000
+        xx = paramCorHist.kp1*1000
+        nameTex = '$ k_{p}^{1} $'
     if name== 'kp2': 
-        xx = paramCor.kp2*1000
+        xx = paramCorHist.kp2*1000
+        nameTex = '$ k_{p}^{2} $'
     if name== 'kp3': 
-        xx = paramCor.kp3*1000
+        xx = paramCorHist.kp3*1000
+        nameTex = '$ k_{p}^{3} $'
     if name== 'RSS': 
-        xx = paramCor.res
+        xx = paramCorHist.res
+        nameTex = '$ RSS $'
     if name== 'tb1': 
-        xx = paramCor.tb1
+        xx = paramCorHist.tb1
+        nameTex = '$ t_{b}^{1} $'
     if name== 'tb2': 
-        xx = paramCor.tb2
+        xx = paramCorHist.tb2
+        nameTex = '$ t_{b}^{2} $'
     if name== 'tb3': 
-        xx = paramCor.tb3
+        xx = paramCorHist.tb3
+        nameTex = '$ t_{b}^{3} $'
     if name== 'DeltaT1': 
-        xx = paramCor.DeltaT1
+        xx = paramCorHist.DT1    
+        nameTex = '$ \Delta T_1 $'
     if name== 'DeltaT2': 
-        xx = paramCor.DeltaT2
+        xx = paramCorHist.DT2
+        nameTex = '$ \Delta T_2 $'
     if name== 'DeltaT3': 
-        xx = paramCor.DeltaT3
+        xx = paramCorHist.DT3
+        nameTex = '$ \Delta T_3 $'
 
     figure = go.Figure(data=[go.Histogram(x=xx, nbinsx=300,
         marker=dict(
@@ -371,7 +387,7 @@ def hist_graph(name):
             )))])
     figure.update_layout(
         title={
-        'text': name,
+        'text': nameTex,
         'y':0.9,
         'x':0.5,
         'xanchor': 'center',
@@ -379,32 +395,558 @@ def hist_graph(name):
        yaxis_title_text='Frequency', # yaxis label
        autosize=False,
        width=1000,
-       height=700
+       height=500
     )
     return figure
 
+tabs_styles = {
+    'height': '40px'
+}
+tab_style = {
+    'borderTop': '1px solid #d6d6d6',
+    'borderBottom': '1px solid #d6d6d6',
+    'padding': '6px',
+    'color': 'rgb(2, 21, 70)',
+    'backgroundColor': 'white',
+    'fontWeight': 'bold'
+}
 
-
-app = dash.Dash(__name__,
-                external_scripts=external_scripts,
-                external_stylesheets=external_stylesheets)
+tab_selected_style = {
+    'borderTop': '1px solid #d6d6d6',
+    'borderBottom': '1px solid #d6d6d6',
+    'backgroundColor': 'rgb(2, 21, 70)',
+    'color': 'white',
+    'padding': '6px'
+}
 
 app.title = 'adaptive capacity'
 server = app.server
 
-app.layout = html.Div([
-    html.Div(
-        id="home",
-        style={ 'display': 'none' }
-    ),
-   
+app.layout = html.Div([   
    
     html.Div(
         className="pkcalc-banner",
         children=[
-            html.H2("Quantification of animal adaptive capacity"),
+            html.H2("PhenoBCS: a model to phenotype body condition’ dynamics in ruminants"),
         ],
     ),
+          
+        html.Div(id='speck-control-tabs', className='control-tabs', children=[ 
+            dcc.Tabs(id='speck-tabs', value='what-is', children=[
+                dcc.Tab(
+                    label='Introduction',
+                    value='what-is',
+                    style=tab_style, 
+                    selected_style=tab_selected_style,
+                    children=html.Div(className='control-tabBB', children=[
+                      html.Div(
+                           [
+                            html.P('Author #1 György Kövér', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
+                            html.P('Author #2 György Kövér', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
+                            html.H4(className='what-isSS', children='What is PhenoBR?', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
+                            html.P('PhenoBR is a generic dynamic model, based on a system of ordinary differential equations. ' 
+                               'Its aim is to describe the BCS variations of ruminants over several productive cycles. '
+                               'The animal model used in this work is the reproductive ewe, during its whole lifespan. '
+                               'The parameters of this model represent animal characteristics in terms of its capacities '
+                               'to mobilize and to restore BR in function of the physiological point in a given production cycle. '
+                               'Two main types of parameters are expected. First ones are time related parameters '
+                               '(i.e. time related to the beginning of BR mobilization and the interval of BR mobilization '
+                               'period for each productive cycle). The second category of parameters are related to the intensity '
+                               'of each BR mobilization period and then the capacity for recovering initial BR status.', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}) 
+                           ],
+                                 style={'width': '50%','height': '50px','vertical-align': 'middle',
+                                        'display': 'table-cell',
+                                        'margin': '0px',
+                                        'padding': '0px',
+                                     #   'background-color': 'lightblue'
+                                        }),
+                       html.Div([
+                                  html.Img(src=app.get_asset_url('img4.png'), style={'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'})
+                                ],
+                                 style={'width': '65%',
+                                        'display': 'table-cell',
+                                     #   'background-color': 'lightblue'
+                                        })
+
+                        ])
+                ), 
+                dcc.Tab(
+                    label='The BR-NEB model',
+                    value='what-is2',
+                    style=tab_style, selected_style=tab_selected_style,
+                    children=html.Div(className='control-tab', children=[
+                      html.Div(
+                           [
+                            html.P('Author #1 György Kövér', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
+                            html.P('Author #2 György Kövér', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
+                            html.H4(className='what-isSS', children='What is PhenoBR?', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
+                            html.P('PhenoBR is a generic dynamic model, based on a system of ordinary differential equations. ' 
+                               'Its aim is to describe the BCS variations of ruminants over several productive cycles. '
+                               'The animal model used in this work is the reproductive ewe, during its whole lifespan. '
+                               'The parameters of this model represent animal characteristics in terms of its capacities '
+                               'to mobilize and to restore BR in function of the physiological point in a given production cycle. '
+                               'Two main types of parameters are expected. First ones are time related parameters '
+                               '(i.e. time related to the beginning of BR mobilization and the interval of BR mobilization '
+                               'period for each productive cycle). The second category of parameters are related to the intensity '
+                               'of each BR mobilization period and then the capacity for recovering initial BR status.', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}) 
+                           ],
+                                 style={'width': '50%','height': '50px','vertical-align': 'middle',
+                                        'display': 'table-cell',
+                                        'margin': '0px',
+                                        'padding': '0px',
+                                     #   'background-color': 'lightblue'
+                                        }),
+                        ])
+                ), 
+                dcc.Tab(
+                    label='Response to NEB challenge ',
+                    value='what-is3',style=tab_style, 
+                    selected_style=tab_selected_style,
+                    children=html.Div(className='control-tab', children=[
+                      html.H6(children='Characterize the response of one animal to NEB challenge during one or several productive cycle', 
+                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'7px','vertical-align': 'middle','border-width': 'thin','border-style':'solid'}),
+                      html.Div(
+                           [
+#############                             
+                                html.Div(
+                                    id="dropdown-controls",
+                                    children=[
+                                        # dropdown 1
+                                        html.Div(
+                                            [
+                                                dcc.Dropdown(
+                                                    id="parity",
+                                                    options=[{ 'label': 'Ewes with parity: 1',  'value': 'G1'  },
+                                                             { 'label': 'Ewes with parity: 2',  'value': 'G2'  },
+                                                             { 'label': 'Ewes with parity: 3',  'value': 'G3'  },
+                                                             { 'label': 'Ewes with parity: 12', 'value': 'G12' },
+                                                             { 'label': 'Ewes with parity: 13', 'value': 'G13' },
+                                                             { 'label': 'Ewes with parity: 23', 'value': 'G23' },
+                                                             { 'label': 'Ewes with parity: 123', 'value': 'G123' },
+                                                             { 'label': 'All the Ewes in the dataset', 'value': 'ALL' }
+                                                            ],
+                                                    value='G123',
+                                                    clearable=False,
+                                                    optionHeight = 24,
+                                                    style={'margin': '0px','margin-right': '7px',
+                                                           'padding': '0px'},),
+                                            ],
+                                            style={'width': '36%',
+                                                   'display': 'inline-block','vertical-align': 'middle'}),
+                                                
+                                                        # dropdown 2
+                                        html.Div(
+                                            [
+                                                dcc.Dropdown(
+                                                    id="PKSubject",
+                                                    options=[{
+                                                        'label': i,
+                                                        'value': i
+                                                    } for i in subjects],
+                                                    value='51180',
+                                                    clearable=False,
+                                                    optionHeight = 24),
+                                            ],
+                                            style={'width': '14%',
+                                                   'display': 'inline-block','vertical-align': 'middle'}),
+                                                             
+                                                    ],
+                                                #style={'width':'85%', 'margin': '0 auto'}
+                                                ),
+#############          
+                                html.Div( 
+                                    children=[     
+                                                dcc.Graph(id='BCS-graph',
+                                                            config={
+                                                               'displayModeBar': False},
+                                                            style={'margin': '0px','margin-top': '7px','margin-right': '7px',
+                                                                   'padding': '0px','border-width': 'thin','border-style':'solid'}
+                                                            ),             
+                                                    ],
+                                                style={'margin': 'auto'}),          
+#############                    
+                           ],
+                                 style={'width': '70%',
+                                        'display': 'inline-block',
+                                        'padding': '0',
+                                        'vertical-align': 'top'
+                                        }),
+                      html.Div(
+                           [
+#############                           
+                                        html.P(children='In this part you select an animal based on the number of parities, to see how its response in term of the variation of is summerized with 4 parameters per parity ( $k_b$, $k_p$, $t_b$, $\Delta T$ ). ', 
+                                               style={'background-color': 'lightblue','display': 'inline-block','margin-top':'45px','margin-left': 'auto', 'margin-right': 'auto','padding': '2px','border-width': 'thin','border-style':'solid'}),
+                                          
+                                        html.P(children='Intensities of reserves’ mobilization and recovery', 
+                                               style={'background-color': 'lightblue','display': 'inline-block','margin-top':'15px','margin-left': 'auto', 'margin-right': 'auto','padding': '2px','border-width': 'thin','border-style':'solid'}),
+                                        html.Div(
+                                                [
+                                                    dash_table.DataTable(
+                                                        id='tableFich',
+                                                        columns=[{"name":"Parity", "id": "parity"},
+                                                                 {"name":"$ k_b $", "id": "kb", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                                 {"name":"$ k_p $", "id": "kp", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                                ],
+                                                        style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'minWidth': '40px', 'width': '40px', 'maxWidth': '40px', 'padding': '2px' },
+                                                        style_table={'textAlign': 'center', 'maxHeight': 400},
+                                                        data=fichierfinal.to_dict('records'),
+                                                        style_header=table_header_style,
+                                                    )
+                                                ],
+                                                ),
+                                        html.P(children='Time related parameters', 
+                                               style={'background-color': 'lightblue','display': 'inline-block','margin-top':'15px','vertical-align': 'middle','padding': '2px','border-width': 'thin','border-style':'solid'}),
+                                        html.Div(
+                                                [
+                                                    dash_table.DataTable(
+                                                        id='tableFich2',
+                                                        columns=[{"name":"Parity", "id": "parity"},
+                                                                 {"name":"$ t_b $", "id": "tb"},
+                                                                 {"name":"$\Delta T$", "id": "DT"}
+                                                                ],
+                                                        style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'minWidth': '40px', 'width': '40px', 'maxWidth': '40px', 'padding': '2px' },
+                                                        style_table={'textAlign': 'center', 'maxHeight': 400},
+                                                        data=fichierfinal.to_dict('records'),
+                                                        style_header=table_header_style,
+                                                    )
+                                                ],
+                                                ),
+                                        html.Div(
+                                                className="section",
+                                                children=[
+                                                  html.Form(
+                                                        action=downloadable_BCSDataSim_zip,
+                                                        method="get", 
+                                                        children=[
+                                                            html.Button(
+                                                                className="button",
+                                                                type="submit",
+                                                                title ="Download the parameters, the measured and simulated BCS data as a zip file",
+                                                                children=[
+                                                                    "download"
+                                                                ],style={'border': '2px solid rgb(2, 21, 70)'}
+                                                            )
+                                                        ],style={'margin-top': '15px'}
+                                                    )
+                                                ]
+                                            )
+                           ],   
+                                 style={'width': '30%',
+                                        'display': 'inline-block',
+                                        'padding': '0',
+                                        'vertical-align': 'middle','margin': 'auto','text-align': 'center'
+                                        }),       
+                        ])
+                ), 
+                dcc.Tab(
+                    label='Descriptive analysis',
+                    value='what-is4',style=tab_style, 
+                    selected_style=tab_selected_style,
+                    children=html.Div(className='control-tab', children=[ html.H6(children='Characteristics of a selected group of animals  -  Descriptive analysis', 
+                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'7px','vertical-align': 'middle','border-width': 'thin','border-style':'solid'}),
+                      html.Div(
+                           [
+#############                             
+                                html.Div(
+                                    id="dropdown-controls4",
+                                    children=[
+                                        # dropdown 1
+                                        html.Div(
+                                            [
+                                                dcc.Dropdown(
+                                                    id="parityHist",
+                                                    options=[{ 'label': 'Ewes with parity: 1',  'value': 'G1'  },
+                                                             { 'label': 'Ewes with parity: 2',  'value': 'G2'  },
+                                                             { 'label': 'Ewes with parity: 3',  'value': 'G3'  },
+                                                             { 'label': 'Ewes with parity: 12', 'value': 'G12' },
+                                                             { 'label': 'Ewes with parity: 13', 'value': 'G13' },
+                                                             { 'label': 'Ewes with parity: 23', 'value': 'G23' },
+                                                             { 'label': 'Ewes with parity: 123', 'value': 'G123' },
+                                                             { 'label': 'All the Ewes in the dataset', 'value': 'ALL' }
+                                                            ],
+                                                    value='G123',
+                                                    clearable=False,
+                                                    optionHeight = 24,
+                                                    style={'margin': '0px','margin-right': '35px',
+                                                           'padding': '0px'},),
+                                            ],
+                                            style={'width': '280px',
+                                                   'vertical-align': 'middle'}),
+              
+                                       html.Div(
+                                                className="section",
+                                                children=[
+                                                  html.Form(
+                                                        action=downloadable_BiVar_zip,
+                                                        method="get", 
+                                                        children=[
+                                                            html.Button(
+                                                                className="button",
+                                                                type="submit",
+                                                                title ="Under Construction",
+                                                                children=[
+                                                                    "download"
+                                                                ],style={'border': '2px solid rgb(2, 21, 70)'}
+                                                            )
+                                                        ]
+                                                    )
+                                                ],style={'display': 'inline-block','vertical-align': 'middle','margin-top': '400px','margin-left': '50',}
+                                            ),
+   
+                                                             
+                                                    ],
+                                                ), 
+#############          
+#############                    
+                           ],
+                                 style={'width': '20%',
+                                        'display': 'inline-block', 'margin-left': 'auto', 'margin-right': 'auto',
+                                        'padding': '0',
+                                        'vertical-align': 'top'
+                                        }),
+                      html.Div(
+                           [
+                                html.Div(
+                                    [
+                                        dash_table.DataTable(
+                                            id='tableKbkpTime',
+                                            columns=[{"name":"", "id": "stat"},
+                                                     {"name":"\( k_{b}^{1} \)", "id": "kb1", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                     {"name":"\( k_{b}^{2} \)", "id": "kb2", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                     {"name":"\( k_{b}^{3} \)", "id": "kb3", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                     {"name":"\( k_{p}^{1} \)", "id": "kp1", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                     {"name":"\( k_{p}^{2} \)", "id": "kp2", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                     {"name":"\( k_{p}^{3} \)", "id": "kp3", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                     {"name":"\(\Delta T^1\)", "id": "DT1", 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)},
+                                                     {"name":"\(\Delta T^2\)", "id": "DT2", 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)},
+                                                     {"name":"\(\Delta T^3\)", "id": "DT3", 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)},
+                                                     {"name":"RSS", "id": "RSS", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)}
+                                                    ],
+                                            style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'maxWidth': '120px','padding': '2py' },
+                                            style_table={'textAlign': 'center', 'maxHeight': 400},
+                                            data=ParanalKbkpTime.to_dict('records'),
+                                            style_header=table_header_style,
+                                        )
+                                    ],
+                                    ),                   
+                                        
+                                        
+                                        
+                                        
+                                        
+                                        
+                               html.Div(
+                                    [         
+                                            dcc.Graph(
+                                                id = 'graphHist',    
+                                                figure=hist_graph(hist_Var),
+                                                            config={
+                                                               'displayModeBar': False},
+                                                            style={'margin': '0px','margin-top': '7px','margin-right': '7px',
+                                                                   'padding': '0px','border-width': 'thin','border-style':'solid'}
+                                                            )
+                                    ],
+                                    style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}
+                                    ),
+                               html.Div(
+                                    [
+                                            dcc.RadioItems(id = 'input-radio-button',
+                                                                  options = [dict(label = '$ k_{b}^{1} $', value = 'kb1'),
+                                                                             dict(label = '$ k_{b}^{2} $', value = 'kb2'),
+                                                                             dict(label = '$ k_{b}^{3} $', value = 'kb3'),
+                                                                             dict(label = '$ k_{p}^{1} $', value = 'kp1'),
+                                                                             dict(label = '$ k_{p}^{2} $', value = 'kp2'),
+                                                                             dict(label = '$ k_{p}^{3} $', value = 'kp3'),
+                                                                             dict(label = '$ RSS $', value = 'RSS'),
+                                                                             dict(label = '$ t_{b}^{1} $', value = 'tb1'),
+                                                                             dict(label = '$ t_{b}^{2} $', value = 'tb2'),
+                                                                             dict(label = '$ t_{b}^{3} $', value = 'tb3'),
+                                                                             dict(label = '$ \Delta T^1 $', value = 'DeltaT1'),
+                                                                             dict(label = '$ \Delta T^2 $', value = 'DeltaT2'),
+                                                                             dict(label = '$ \Delta T^3 $', value = 'DeltaT3')
+                                                                            ],
+                                                                  value = 'RSS',
+                                          labelStyle={"padding-left": "10px",'display': 'block','margin-top': '4px',},
+                                          style={"padding-left": "50px",  "vertical-align": "top",'margin-top': '40px'},
+                                          ),
+                                    ],
+                                    style={ 'display': 'inline-block',"vertical-align": "top"}
+                                    ),
+                                    
+                                    
+                           ],   
+                                 style={'width': '80%',
+                                        'display': 'inline-block',
+                                        'padding': '0',
+                                        'vertical-align': 'middle','margin': 'auto','text-align': 'center'
+                                        }),  
+                      
+                        ])
+                ),
+                dcc.Tab(
+                    label='Correlation analysis',
+                    value='what-is5',style=tab_style, 
+                    selected_style=tab_selected_style,
+                    children=html.Div(className='control-tab', children=[
+                      html.H6(children='Characteristics of a selected group of animals  -  Correlation analysis', 
+                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'7px','vertical-align': 'middle','border-width': 'thin','border-style':'solid'}),
+                      html.Div(
+                           [
+#############                             
+                                html.Div(
+                                    id="dropdown-controls2",
+                                    children=[
+                                        # dropdown 1
+                                        html.Div(
+                                            [
+                                                dcc.Dropdown(
+                                                    id="parityBiVar",
+                                                    options=[{ 'label': 'Ewes with parity: 1',  'value': 'G1'  },
+                                                             { 'label': 'Ewes with parity: 2',  'value': 'G2'  },
+                                                             { 'label': 'Ewes with parity: 3',  'value': 'G3'  },
+                                                             { 'label': 'Ewes with parity: 12', 'value': 'G12' },
+                                                             { 'label': 'Ewes with parity: 13', 'value': 'G13' },
+                                                             { 'label': 'Ewes with parity: 23', 'value': 'G23' },
+                                                             { 'label': 'Ewes with parity: 123', 'value': 'G123' },
+                                                             { 'label': 'All the Ewes in the dataset', 'value': 'ALL' }
+                                                            ],
+                                                    value='G123',
+                                                    clearable=False,
+                                                    optionHeight = 24,
+                                                    style={'margin': '0px','margin-right': '35px',
+                                                           'padding': '0px'},),
+                                            ],
+                                            style={'width': '280px',
+                                                   'display': 'inline-block','vertical-align': 'middle'}),
+              
+                                       html.Div(
+                                                className="section",
+                                                children=[
+                                                  html.Form(
+                                                        action=downloadable_BiVar_zip,
+                                                        method="get", 
+                                                        children=[
+                                                            html.Button(
+                                                                className="button",
+                                                                type="submit",
+                                                                title ="Download the parameters, the measured and simulated BCS data as a zip file",
+                                                                children=[
+                                                                    "download"
+                                                                ],style={'display': 'inline-block','border': '2px solid rgb(2, 21, 70)'}
+                                                            )
+                                                        ]
+                                                    )
+                                                ],style={'display': 'inline-block','vertical-align': 'middle','margin-left': '185px',}
+                                            ),
+   
+                                                             
+                                                    ],
+                                                ), 
+#############          
+                                    
+                                html.Div( 
+                                    children=[  
+                                                dcc.Graph(id='graphHeat',
+                                                            figure=heat_plot(),
+                                                            config={
+                                                               'displayModeBar': False},
+                                                            style={'margin': '0px','margin-top': '7px','margin-right': '7px',
+                                                                   'padding': '0px','border-width': 'thin','border-style':'solid'}
+                                                            ),             
+                                                    ],
+                                                style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}),          
+#############                    
+                           ],
+                                 style={'width': '50%',
+                                        'display': 'inline-block', 'margin-left': 'auto', 'margin-right': 'auto',
+                                        'padding': '0',
+                                        'vertical-align': 'top'
+                                        }),
+                      html.Div(
+                           [
+#############                              
+                                html.Div(
+                                    id="dropdown-controls3",
+                                    children=[
+                                        # dropdown 1
+                                            html.Div(
+                                                [   html.P("""Horizontal axis""")
+                                                ],
+                                                style={'display': 'inline-block','margin': '0px','margin-right': '7px','padding': '0px'}
+                                                ),
+                                            html.Div(
+                                                [
+                                                    dcc.Dropdown(
+                                                        id="XVar",
+                                                        options=[{
+                                                            'label': i[1] ,
+                                                            'value': i[0] 
+                                                        }  for i in zip(xTv,xT) ],
+                                                        value='kb1',
+                                                        clearable=False,
+                                                        optionHeight = 24,
+                                                        style={'margin': '0px','margin-right': '7px', 
+                                                           'padding': '0px'},),
+                                                ],
+                                                style={'width': '90px',
+                                                       'display': 'inline-block','vertical-align': 'middle'}),
+                                                
+                                                
+                                            html.Div(
+                                                [   html.P("""Vertical axis""")
+                                                ],
+                                                style={'display': 'inline-block','margin': '0px','margin-right': '7px','padding': '0px'}),
+                                            html.Div(
+                                                [
+                                                    dcc.Dropdown(
+                                                        id="YVar",
+                                                        options=[{
+                                                            'label': i[1] ,
+                                                            'value': i[0] 
+                                                        }  for i in zip(xTv,xT) ],
+                                                        value='kp1',
+                                                        clearable=False,
+                                                        optionHeight = 24,
+                                                        style={'margin': '0px','margin-right': '7px', 
+                                                           'padding': '0px'},),
+                                                ],
+                                                style={'width': '90px',
+                                                           'display': 'inline-block','vertical-align': 'middle'}),
+        
+   
+                                                             
+                                                    ],
+                                                ),
+#############          
+                                html.Div( 
+                                    children=[  
+                                                dcc.Graph(id='Scatter-graph',
+                                                            figure=scatter_plot(),
+                                                            config={
+                                                               'displayModeBar': False},
+                                                            style={'margin': '0px','margin-top': '7px','margin-right': '7px',
+                                                                   'padding': '0px','border-width': 'thin','border-style':'solid'}
+                                                            ),             
+                                                    ],
+                                                style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}), 
+                           ],   
+                                 style={'width': '50%',
+                                        'display': 'inline-block',
+                                        'padding': '0',
+                                        'vertical-align': 'middle','margin': 'auto','text-align': 'center'
+                                        }),       
+                        ])
+                ),
+                
+             ], style=tabs_styles,
+            colors={
+            "border": "black",
+            "primary": "red",
+            "background": "orange"
+            }),
+                
+        ]),
+                        
                                 html.P(
                                     id="instructions",
                                     children="Authors: X. Y."
@@ -414,75 +956,8 @@ app.layout = html.Div([
                                     children="The ewes are groupped by the number of their parities."
                                     " Select a group then select a ewe by the rightmost dropdown list."
                                 ),
-                                        
-    # wrapper required for scrolling
-    html.Div(
-        id="dropdown-controls-wrapper",
-        children=[        
-            html.Div(
-                id="dropdown-controls",
-                children=[
-                    # dropdown 1
-    html.Div(
-        [
-            dcc.Dropdown(
-                id="parity",
-                options=[{ 'label': 'Ewes with parity: 1',  'value': 'G1'  },
-                         { 'label': 'Ewes with parity: 2',  'value': 'G2'  },
-                         { 'label': 'Ewes with parity: 3',  'value': 'G3'  },
-                         { 'label': 'Ewes with parity: 12', 'value': 'G12' },
-                         { 'label': 'Ewes with parity: 13', 'value': 'G13' },
-                         { 'label': 'Ewes with parity: 23', 'value': 'G23' },
-                         { 'label': 'Ewes with parity: 123', 'value': 'G123' },
-                         { 'label': 'All the Ewes in the dataset', 'value': 'ALL' }
-                        ],
-                value='G123',
-                clearable=False,
-                optionHeight = 25),
-        ],
-        style={'width': '35%',
-               'display': 'inline-block'}),
-            
-                    # dropdown 2
-    html.Div(
-        [
-            dcc.Dropdown(
-                id="PKSubject",
-                options=[{
-                    'label': i,
-                    'value': i
-                } for i in subjects],
-                value='51180',
-                clearable=False,
-                optionHeight = 24),
-        ],
-        style={'width': '25%',
-               'display': 'inline-block'}),
-      
-                    # scroll to top button  
-                    dcc.Link(
-                        className="scroll-to-top-container",
-                        href='#home',
-                        children=[
-                            html.A(
-                                children=[
-                                    html.I(className='fa fa-arrow-up', **{'aria-hidden': 'true'})
-                                ],
-                                href='#home',
-                                title="Scroll to the top"
-                            ),
-                        ]
-                    )
-                   
-                ],
-            ),
-        ],
-    ),      
-            
-    dcc.Graph(id='BCS-graph',
-                config={
-                   'displayModeBar': False
-                }),
+           
+     
     html.Div(
         [
             dash_table.DataTable(
@@ -517,30 +992,10 @@ app.layout = html.Div([
                                     children="The table below contains the identification of the ewe,"
                                     " the number of parities she had, the values of tb te kp kb and the value of the residual (opti)."
                                 ),
-    html.Div(
-        [
-            dash_table.DataTable(
-                id='tableFich',
-                columns=[{"name":"Ewe ID", "id": "ID"},
-                         {"name":"Parity", "id": "parity"},
-                         {"name":"kb", "id": "kb", 'type': 'numeric', 'format': Format(precision=8, scheme=Scheme.fixed)},
-                         {"name":"kp", "id": "kp", 'type': 'numeric', 'format': Format(precision=8, scheme=Scheme.fixed)},
-                         {"name":"tb", "id": "tb"},
-                         {"name":"te", "id": "te"},
-                         {"name":"BCSm", "id": "BCSm"},
-                         {"name":"Pmax", "id": "Pmax"},
-                         {"name":"opti", "id": "opt", 'type': 'numeric', 'format': Format(precision=8, scheme=Scheme.fixed)}
-                        ],
-                style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'maxWidth': '120px','padding': '2px' },
-                style_table={'textAlign': 'center', 'overflowX': 'scroll','maxHeight': 400},
-                data=fichierfinal.to_dict('records'),
-                style_header=table_header_style,
-            )
-        ],
-        ),
+    
                                 html.P(
                                     id="instructionsB",
-                                    children="Simulation based on the estimated parameters"
+                                    children="Simulation $y = \\begin{cases} 0 & x < 0 \\\\ x & x \ge 0 \\end{cases}$ based on the estimated parameters"
                                 ),
                                 html.P(
                                     id="instructionsB2",
@@ -548,214 +1003,94 @@ app.layout = html.Div([
                                     "for example ewes that do not match correctly with the model "
                                     "in order to observe their parameters associated with a graph (below)."
                                 ),
-    html.Div(
-        [
-            dash_table.DataTable(
-                id='tableKbkp',
-                columns=[{"name":"", "id": "stat"},
-                         {"name":"kb1", "id": "kb1", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                         {"name":"kb2", "id": "kb2", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                         {"name":"kb3", "id": "kb3", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                         {"name":"kp1", "id": "kp1", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                         {"name":"kp2", "id": "kp2", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                         {"name":"kp3", "id": "kp3", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                         {"name":"RSS", "id": "RSS", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)}
-                        ],
-                style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'maxWidth': '120px','padding': '2py' },
-                style_table={'textAlign': 'center', 'overflowX': 'scroll','maxHeight': 400},
-                data=ParanalKbkp.to_dict('records'),
-                style_header=table_header_style,
-            )
-        ],
-        ),
-    html.Div(
-        [
-            dash_table.DataTable(
-                id='tableTime',
-                columns=[{"name":"",        "id": "stat"},
-                         {"name":"tb1",     "id": "tb1", 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)},
-                         {"name":"tb2",     "id": "tb2", 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)},
-                         {"name":"tb3",     "id": "tb3", 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)},
-                         {"name":"DeltaT1", "id": "DT1", 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)},
-                         {"name":"DeltaT2", "id": "DT2", 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)},
-                         {"name":"DeltaT3", "id": "DT3", 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)}
-                        ],
-                style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'maxWidth': '120px','padding': '2py' },
-                style_table={'textAlign': 'center', 'overflowX': 'scroll','maxHeight': 400},
-                data=ParanalTime.to_dict('records'),
-                style_header=table_header_style,
-            )
-        ],
-        ),
-    html.Div(
-        [         
-                dcc.Graph(
-                    id = 'graphHist',    
-                    figure=hist_graph(hist_Var),
-                    config={'displayModeBar': False}
-                    )
-        ],
-        style={ 'display': 'inline-block'}
-        ),
-    html.Div(
-        [
-                 html.P(
-                                    children="Select a trait to view the histogram"
-                                ),
-                dcc.RadioItems(id = 'input-radio-button',
-                                      options = [dict(label = 'kb1', value = 'kb1'),
-                                                 dict(label = 'kb2', value = 'kb2'),
-                                                 dict(label = 'kb3', value = 'kb3'),
-                                                 dict(label = 'kp1', value = 'kp1'),
-                                                 dict(label = 'kp2', value = 'kp2'),
-                                                 dict(label = 'kp3', value = 'kp3'),
-                                                 dict(label = 'RSS', value = 'RSS'),
-                                                 dict(label = 'tb1', value = 'tb1'),
-                                                 dict(label = 'tb2', value = 'tb2'),
-                                                 dict(label = 'tb3', value = 'tb3'),
-                                                 dict(label = 'DeltaT1', value = 'DeltaT1'),
-                                                 dict(label = 'DeltaT2', value = 'DeltaT2'),
-                                                 dict(label = 'DeltaT3', value = 'DeltaT3')
-                                                ],
-                                      value = 'RSS',
-              labelStyle={"padding-left": "10px",'display': 'inline-block'},
-              style={"padding-left": "50px", "max-width": "1000px", "margin": "center"},
-              ),
-        ],
-        style={ 'display': 'inline-block'}
-        ),
-    html.Div(
-        [         
-                dcc.Graph(
-                    id = 'graphHeat',    
-                    #figure=figHeat, 
-                    figure=heat_plot(), 
-                    config={'displayModeBar': False}
-                    )
-        ],
-#        style={ 'display': 'inline-block'}
-        ),    
-        
-    html.Div(
-        [   html.P("""Horizontal axis""",
-                            style={'margin-right': '1em'})
-        ],
-        style={'display': 'inline-block'}
-        ),
-    html.Div(
-        [
-            dcc.Dropdown(
-                id="XVar",
-                options=[{
-                    'label': i,
-                    'value': i
-                } for i in xT],
-                value='kb1',
-                clearable=False,
-                optionHeight = 24,style=dict(display='inline-block',width='60%',verticalAlign="middle"))
-        ],
-        style={'width': '15%',
-               'display': 'inline-block'}),
-        
-        
-    html.Div(
-        [   html.P("""Vertical axis""",
-                            style={'margin-right': '1em'})
-        ],
-        style={'display': 'inline-block'}),
-    html.Div(
-        [
-            dcc.Dropdown(
-                id="YVar",
-                options=[{
-                    'label': i,
-                    'value': i
-                } for i in xT],
-                value='kp1',
-                clearable=False,
-                optionHeight = 24,style=dict(display='inline-block',width='60%',verticalAlign="middle"))
-        ],
-        style={'width': '15%',
-               'display': 'inline-block'}),
-        
-        
-    dcc.Graph(id='Scatter-graph',  
-                figure=scatter_plot(),
-                config={
-                   'displayModeBar': False
-                }),
+   
 ])
-
-#
-#@app.callback(
-#    dash.dependencies.Output('graphHist', 'figure'),
-#    [dash.dependencies.Input("input-radio-button", "value")],
-#)
-#def update_date_radioItem(name):
-#    
-#    global hist_Var 
-#    hist_Var = name
-#    figure = hist_graph(hist_Var)
-#    return figure
-
-#
-#@app.callback(
-#    dash.dependencies.Output('Scatter-graph', 'figure'),
-#    [dash.dependencies.Input('XVar', 'value'),dash.dependencies.Input('YVar', 'value')])
-#def scatter_XYVar(pXVar,pYVar):
-#    global sc_X
-#    global sc_Y
-#    sc_X = pXVar
-#    sc_Y = pYVar
-#    fig = scatter_plot()
-#    return fig
 
 
 @app.callback(
     [    
     dash.dependencies.Output("PKSubject", "options"),
-    dash.dependencies.Output("tableKbkp", "data"),
-    dash.dependencies.Output("tableTime", "data"),
-    dash.dependencies.Output('graphHist', 'figure'),
-    dash.dependencies.Output('graphHeat', 'figure'),
-    dash.dependencies.Output('Scatter-graph', 'figure')
     ],
     [dash.dependencies.Input("parity", "value"),dash.dependencies.Input("input-radio-button", "value"),
-     dash.dependencies.Input('XVar', 'value'),dash.dependencies.Input('YVar', 'value')],
+     ],
 )
-def update_date_dropdown(pGroup,name,pXVar,pYVar):
+def update_date_dropdown(pGroup,name):
     global paramCor
-    global hist_Var 
-    global sc_X
-    global sc_Y
-    hist_Var = name
-    sc_X = pXVar
-    sc_Y = pYVar
     if pGroup == 'ALL': 
         paramCor = paramCor_Orig.copy()
     else: 
         paramCor = paramCor_Orig[paramCor_Orig.Group == pGroup]
     subjectsG = paramCor.ID.unique()
-    ParanalKbkp, ParanalTime = descriptives()
+    return [[{'label': i, 'value': i} for i in subjectsG]]
+
+@app.callback(
+    [    
+    dash.dependencies.Output("tableKbkpTime", "data"),
+    dash.dependencies.Output('graphHist', 'figure'),
+    ],
+    [dash.dependencies.Input("parityHist", "value"),dash.dependencies.Input("input-radio-button", "value"),]
+)
+def update_date_dropdownHist(pGroup,name):
+    global paramCorHist
+    global hist_Var 
+    hist_Var = name
+    #print(pGroup)
+    print(name)
+    if pGroup == 'ALL': 
+        paramCorHist = paramCor_Orig.copy()
+    else: 
+        paramCorHist = paramCor_Orig[paramCor_Orig.Group == pGroup]
+    ParanalKbkpTime = descriptives()
     histfigure = hist_graph(hist_Var)
+    return ParanalKbkpTime.to_dict('records'),histfigure
+
+
+@app.callback(
+    [    
+    dash.dependencies.Output('Scatter-graph', 'figure'),
+    dash.dependencies.Output('graphHeat', 'figure'),
+    ],
+    [dash.dependencies.Input("parityBiVar", "value"),
+     dash.dependencies.Input('XVar', 'value'),dash.dependencies.Input('YVar', 'value')],
+)
+def update_date_dropdownBivar(pGroup,pXVar,pYVar):
+    global paramCorBiVar
+    global sc_X
+    global sc_Y
+    sc_X = pXVar
+    sc_Y = pYVar
+    if pGroup == 'ALL': 
+        paramCorBiVar = paramCor_Orig.copy()
+    else: 
+        paramCorBiVar = paramCor_Orig[paramCor_Orig.Group == pGroup]
     heatfigure = heat_plot()
     scatterfigure=scatter_plot()
-    return [{'label': i, 'value': i} for i in subjectsG],ParanalKbkp.to_dict('records'),ParanalTime.to_dict('records'),histfigure,heatfigure,scatterfigure
-
+    return scatterfigure,heatfigure
 
 @app.callback(
     [
     dash.dependencies.Output('BCS-graph', 'figure'),
     dash.dependencies.Output('table', 'data'),
     dash.dependencies.Output('tableFich', 'data'),
+    dash.dependencies.Output('tableFich2', 'data'),
     ],
     [dash.dependencies.Input('PKSubject', 'value')])
 def display_table(Ewe): 
     global tb1, tb2, tb3, te1, te2, te3, BCSm, Pmax
     dffTFich = fichierfinal[fichierfinal.ID==int(Ewe)]
+    dffTFich['DT'] = dffTFich['te']-dffTFich['tb']
+    dffTFich['kb'] = dffTFich['kb']*1000
+    dffTFich['kp'] = dffTFich['kp']*1000
+    header = ['ID','parity','kb','kp','tb','DT']
+    dffTFich.to_csv(downloadable_parameters_csv,columns = header,index=False)
     dffT = pkdata[pkdata.Ewe==int(Ewe)]
     #print(len(dff))
     dff = dffT[pd.notnull(dffT.BCS1)]
+    dffM = dffT[pd.notnull(dffT.BCS1)]
+    dffM['BCS'] = dffM['BCS1']
+    dffM['ID'] = int(Ewe)
+    header = ['ID','Parity','day','BCS']
+    dffM.to_csv(downloadable_BCSData_csv,columns = header,index=False)
     #print(len(dff))
     figure = go.Figure(data=go.Scatter(x=dff.day, y=dff.BCS1, mode='markers',showlegend=False, name='BCS',
         marker=dict(
@@ -823,10 +1158,28 @@ def display_table(Ewe):
 
     figure.add_trace(go.Scatter(x=times, y=sol.y[6,:],mode='lines',line=go.scatter.Line(color="blue"),showlegend=False, name='BSpline'))
                           
-            
-
+    dataset_sim = pd.DataFrame({'day': times, 'BCS_sim': sol.y[6,:]})
+    dataset_sim['ID'] = int(Ewe)
+    header = ['ID','day','BCS_sim']
+    dataset_sim.to_csv(downloadable_BCSSim_csv,columns = header,index=False)
     
-    return figure,dffT.to_dict('records'),dffTFich.to_dict('records')
+    lista_files = [downloadable_parameters_csv,downloadable_BCSData_csv,downloadable_BCSSim_csv]
+    with zipfile.ZipFile(downloadable_BCSDataSim_zip, 'w') as zipMe:        
+        for file in lista_files:
+            zipMe.write(file,basename(file), compress_type=zipfile.ZIP_DEFLATED)
+            
+    return figure,dffT.to_dict('records'),dffTFich.to_dict('records'),dffTFich.to_dict('records')
+
+
+
+
+@app.server.route('/downloadable/<path:path>')
+def serve_static(path):
+    root_dir = os.getcwd()
+    return flask.send_from_directory(
+        os.path.join(root_dir, 'downloadable'), path
+    )
+
 
 if __name__ == '__main__':
     app.run_server(debug=True)
