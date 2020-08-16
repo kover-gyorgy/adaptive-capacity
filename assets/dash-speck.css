@@ -11,12 +11,12 @@
 }
 
 #speck-control-tabs .tab-content {
-    padding: 0px;
+    padding: 10px;
 }
 
 #speck-container {
     display: inline-block !important;
-    padding: 0px;
+    padding: 10px;
     margin: 10px;
 }
 #speck-body .rc-slider-track {

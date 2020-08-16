@@ -26,7 +26,8 @@ from os.path import basename
 
 app = dash.Dash(__name__, external_scripts=[
   'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML',
-])
+]
+)
 
 table_header_style = {
     "backgroundColor": "rgb(2,21,70)",
@@ -36,14 +37,28 @@ table_header_style = {
 
 APP_PATH = str(pl.Path(__file__).parent.resolve())
 
-downloadable_BCSData_csv    = "downloadable/BCSData.csv"
-downloadable_parameters_csv = "downloadable/parameters.csv"
-downloadable_BCSSim_csv     = "downloadable/BCSSim.csv"
-downloadable_BCSDataSim_zip = "downloadable/BCSDataSim.zip"
 
-downloadable_groupCorrMatrix_csv     = "downloadable/corrMatrix.csv"
-downloadable_groupParameters_csv     = "downloadable/groupParameters.csv"
+downloadable_BCSDataSet_csv    = "downloadable/BCSDataSet.txt"
+downloadable_BCSDataSet_zip    = "downloadable/BCSDataSet.zip"
+
+downloadable_BCSData_csv    = "downloadable/BCSData.txt"
+downloadable_parameters_csv = "downloadable/parameters.txt"
+downloadable_BCSSim_csv     = "downloadable/BCSSim.txt"
+downloadable_BCSDataSim_zip = "downloadable/BCSDataSim.zip"
+downloadable_BCSDataSim_Nozip = "downloadable/BCSDataSim"
+downloadable_BCSDataSim_zipRand = downloadable_BCSDataSim_zip
+
+downloadable_groupCorrMatrix_csv     = "downloadable/corrMatrix.txt"       
+downloadable_groupParameters_csv     = "downloadable/corrParameters.txt"
 downloadable_BiVar_zip = "downloadable/BiVar.zip"
+downloadable_BiVar_Nozip = "downloadable/BiVar"
+downloadable_BiVar_zipRand = downloadable_BiVar_zip
+
+downloadable_descStat_csv     = "downloadable/descrStat.txt"   
+downloadable_descParameters_csv     = "downloadable/descrParameters.txt"
+downloadable_Descr_zip = "downloadable/DescrStat.zip"
+downloadable_Descr_Nozip = "downloadable/DescrStat"
+downloadable_Descr_zipRand = downloadable_Descr_zip
 
 pourcorr3 = pd.read_csv(os.path.join(APP_PATH, os.path.join("data", "pourcorr3.csv")))
 fichierfinal = pd.read_csv(os.path.join(APP_PATH, os.path.join("data", "fichierfinal.csv")))
@@ -59,6 +74,12 @@ paramCor_Orig = paramCor.copy()
 paramCorBiVar = paramCor.copy()
 paramCorHist  = paramCor.copy()
  
+pkdataNew = pkdata[['Ewe','BCS.time','Year','Parity','Age_mating','LS','BCS1']].copy()
+pkdataNew.columns = ['ID','BCS_stage','Year','Parity','Age_at_first_mating','Litter_size','BCS'] 
+pkdataNew.to_csv(downloadable_BCSDataSet_csv,index=False)
+with zipfile.ZipFile(downloadable_BCSDataSet_zip, 'w') as zipMe:        
+    zipMe.write(downloadable_BCSDataSet_csv,basename(downloadable_BCSDataSet_csv), compress_type=zipfile.ZIP_DEFLATED)
+
 
 #days of measures for p1, p2 and p3 
 d_P1 = [0,40,80,160,190,230,250,310,330]
@@ -119,7 +140,11 @@ def descriptives():
     data = [['Mean',paramCorHist.kb1.mean()*1000,paramCorHist.kb2.mean()*1000,paramCorHist.kb3.mean()*1000,paramCorHist.kp1.mean()*1000,paramCorHist.kp2.mean()*1000,paramCorHist.kp3.mean()*1000,paramCorHist.DT1.mean(),paramCorHist.DT2.mean(),paramCorHist.DT3.mean(),paramCorHist.res.mean()],
             ['Sd',paramCorHist.kb1.std()*1000,paramCorHist.kb2.std()*1000,paramCorHist.kb3.std()*1000,paramCorHist.kp1.std()*1000,paramCorHist.kp2.std()*1000,paramCorHist.kp3.std()*1000,paramCorHist.DT1.std(),paramCorHist.DT2.std(),paramCorHist.DT3.std(),paramCorHist.res.std()],
             ['Min',paramCorHist.kb1.min()*1000,paramCorHist.kb2.min()*1000,paramCorHist.kb3.min()*1000,paramCorHist.kp1.min()*1000,paramCorHist.kp2.min()*1000,paramCorHist.kp3.min()*1000,paramCorHist.DT1.min(),paramCorHist.DT2.min(),paramCorHist.DT3.min(),paramCorHist.res.min()],
-            ['Max',paramCorHist.kb1.max()*1000,paramCorHist.kb2.max()*1000,paramCorHist.kb3.max()*1000,paramCorHist.kp1.max()*1000,paramCorHist.kp2.max()*1000,paramCorHist.kp3.max()*1000,paramCorHist.DT1.max(),paramCorHist.DT2.max(),paramCorHist.DT3.max(),paramCorHist.res.max()]
+            ['Max',paramCorHist.kb1.max()*1000,paramCorHist.kb2.max()*1000,paramCorHist.kb3.max()*1000,paramCorHist.kp1.max()*1000,paramCorHist.kp2.max()*1000,paramCorHist.kp3.max()*1000,paramCorHist.DT1.max(),paramCorHist.DT2.max(),paramCorHist.DT3.max(),paramCorHist.res.max()],
+            ['$1^{st}$ Quartile',paramCorHist.kb1.quantile(0.25)*1000,paramCorHist.kb2.quantile(0.25)*1000,paramCorHist.kb3.quantile(0.25)*1000,paramCorHist.kp1.quantile(0.25)*1000,paramCorHist.kp2.quantile(0.25)*1000,paramCorHist.kp3.quantile(0.25)*1000,paramCorHist.DT1.quantile(0.25),paramCorHist.DT2.quantile(0.25),paramCorHist.DT3.quantile(0.25),paramCorHist.res.quantile(0.25)],
+            ['Median',paramCorHist.kb1.median()*1000,paramCorHist.kb2.median(),paramCorHist.kb3.median()*1000,paramCorHist.kp1.median()*1000,paramCorHist.kp2.median()*1000,paramCorHist.kp3.median()*1000,paramCorHist.DT1.median(),paramCorHist.DT2.median(),paramCorHist.DT3.median(),paramCorHist.res.median()],
+            ['$3^{rd}$ Quartile',paramCorHist.kb1.quantile(0.75)*1000,paramCorHist.kb2.quantile(0.75)*1000,paramCorHist.kb3.quantile(0.75)*1000,paramCorHist.kp1.quantile(0.75)*1000,paramCorHist.kp2.quantile(0.75)*1000,paramCorHist.kp3.quantile(0.75)*1000,paramCorHist.DT1.quantile(0.75),paramCorHist.DT2.quantile(0.75),paramCorHist.DT3.quantile(0.75),paramCorHist.res.quantile(0.75)]
+
           ]
     lParanalKbkpTime = pd.DataFrame(data,columns=['stat','kb1','kb2','kb3','kp1','kp2','kp3','DT1','DT2','DT3','RSS'])   
  
@@ -130,16 +155,24 @@ ParanalKbkpTime = descriptives()
 xTv = ['kb1', 'kb2', 'kb3', 'kp1', 'kp2', 'kp3', 'DT1', 'DT2', 'DT3']
 xT = ['$ k_{b}^{1} $', '$ k_{b}^{2} $', '$ k_{b}^{3} $', '$ k_{p}^{1} $', '$ k_{p}^{2} $', '$ k_{p}^{3} $', ' $\Delta T^1$ ', ' $\Delta T^2$ ', ' $\Delta T^3$ ']
 
-def heat_plot(): 
+def heat_plot(ppGroup): 
+    global downloadable_BiVar_zipRand 
     paramCorDrop = paramCorBiVar[['kb1', 'kb2', 'kb3', 'kp1', 'kp2', 'kp3', 'DT1', 'DT2', 'DT3']]
     corrMatrix  = paramCorDrop.corr()
-    
+    paramCorBiVar1000 = paramCorBiVar.copy()
+    paramCorBiVar1000.kb1=paramCorBiVar1000.kb1*1000
+    paramCorBiVar1000.kb2=paramCorBiVar1000.kb2*1000
+    paramCorBiVar1000.kb3=paramCorBiVar1000.kb3*1000
+    paramCorBiVar1000.kp1=paramCorBiVar1000.kp1*1000
+    paramCorBiVar1000.kp2=paramCorBiVar1000.kp2*1000
+    paramCorBiVar1000.kp3=paramCorBiVar1000.kp3*1000
     header = ['ID','kb1', 'kb2', 'kb3', 'kp1', 'kp2', 'kp3', 'DT1', 'DT2', 'DT3']
-    paramCorBiVar.to_csv(downloadable_groupParameters_csv,columns = header,index=False)
+    paramCorBiVar1000.to_csv(downloadable_groupParameters_csv,columns = header,index=False)
     corrMatrix.to_csv(downloadable_groupCorrMatrix_csv)
     
     lista_files = [downloadable_groupParameters_csv,downloadable_groupCorrMatrix_csv]
-    with zipfile.ZipFile(downloadable_BiVar_zip, 'w') as zipMe:        
+    downloadable_BiVar_zipRand = downloadable_BiVar_Nozip+ppGroup+".zip"
+    with zipfile.ZipFile(downloadable_BiVar_zipRand, 'w') as zipMe:        
         for file in lista_files:
             zipMe.write(file,basename(file), compress_type=zipfile.ZIP_DEFLATED)
             
@@ -215,12 +248,12 @@ def heat_plot():
                         zmid=0
                         ))
     figHeat.update_layout(
-        title={
-            'text': 'Correlations',
-            'y':0.9,
-            'x':0.5,
-            'xanchor': 'center',
-            'yanchor': 'top'},
+    #    title={
+    #        'text': 'Correlations',
+    #        'y':0.9,
+    #        'x':0.5,
+    #        'xanchor': 'center',
+    #        'yanchor': 'top'},
         #annotations=annotations,
         annotations=[
             dict(
@@ -252,7 +285,9 @@ def heat_plot():
         yaxis_visible=False,
         autosize=False,
         width=600,
-        height=600
+        height=500,
+        #height=500,
+        margin=dict(t=50, b=25  )#r=0, b=0, t=0, pad=0 )
     )
     
     xa1 = []
@@ -319,9 +354,9 @@ def scatter_plot():
             )
         )))
     figure.update_layout(xaxis_title=xT[xTv.index(sc_X)], yaxis_title=xT[xTv.index(sc_Y)])
-    figure.update_layout(title='Scatter Plot of \\( \Delta k_b\\) and \\(k_p\\) 67')
+    #figure.update_layout(title='Scatter Plot of \\( \Delta k_b\\) and \\(k_p\\) 67')
     #figure.update_layout(title='Scatter Plot of $$k_b$$ and $$k_p$$')
-    figure.update_layout(title='Scatter Plot')
+    #figure.update_layout(title='Scatter Plot')
     figure.update_layout(
         title={
         #'text': 'Scatter Plot of \(k_b\) and \(k_p\) 67',
@@ -331,72 +366,113 @@ def scatter_plot():
         'xanchor': 'center',
         'yanchor': 'top'},
         width=600,
-        height=600)
+        height=550,
+        #height=510,
+        margin=dict(t=50,  )#r=0, b=0, t=0, pad=0 )
+        )
+    figure.update_xaxes(showline=True, linewidth=2, linecolor='black')
+    figure.update_yaxes(showline=True, linewidth=2, linecolor='black')
+    figure.update_xaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
+    figure.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
         
     return figure
 
 
-def hist_graph(name):
-    print(name)
+def hist_graph(name,ppGroup):
+    global downloadable_Descr_zipRand 
     if name== 'kb1': 
-        xx = paramCorHist.kb1*1000
+        xx = paramCorHist.kb1.copy()*1000
         nameTex = '$ k_{b}^{1} $'
     if name== 'kb2': 
-        xx = paramCorHist.kb2*1000
+        xx = paramCorHist.kb2.copy()*1000
         nameTex = '$ k_{b}^{2} $'
     if name== 'kb3': 
-        xx = paramCorHist.kb3*1000
+        xx = paramCorHist.kb3.copy()*1000
         nameTex = '$ k_{b}^{3} $'
     if name== 'kp1': 
-        xx = paramCorHist.kp1*1000
+        xx = paramCorHist.kp1.copy()*1000
         nameTex = '$ k_{p}^{1} $'
     if name== 'kp2': 
-        xx = paramCorHist.kp2*1000
+        xx = paramCorHist.kp2.copy()*1000
         nameTex = '$ k_{p}^{2} $'
     if name== 'kp3': 
-        xx = paramCorHist.kp3*1000
+        xx = paramCorHist.kp3.copy()*1000
         nameTex = '$ k_{p}^{3} $'
     if name== 'RSS': 
-        xx = paramCorHist.res
-        nameTex = '$ RSS $'
+        xx = paramCorHist.res.copy()
+        nameTex = '$ RSE $'
     if name== 'tb1': 
-        xx = paramCorHist.tb1
+        xx = paramCorHist.tb1.copy()
         nameTex = '$ t_{b}^{1} $'
     if name== 'tb2': 
-        xx = paramCorHist.tb2
+        xx = paramCorHist.tb2.copy()
         nameTex = '$ t_{b}^{2} $'
     if name== 'tb3': 
-        xx = paramCorHist.tb3
+        xx = paramCorHist.tb3.copy()
         nameTex = '$ t_{b}^{3} $'
     if name== 'DeltaT1': 
-        xx = paramCorHist.DT1    
+        xx = paramCorHist.DT1.copy()    
         nameTex = '$ \Delta T_1 $'
     if name== 'DeltaT2': 
-        xx = paramCorHist.DT2
+        xx = paramCorHist.DT2.copy()
         nameTex = '$ \Delta T_2 $'
     if name== 'DeltaT3': 
-        xx = paramCorHist.DT3
+        xx = paramCorHist.DT3.copy()
         nameTex = '$ \Delta T_3 $'
-
-    figure = go.Figure(data=[go.Histogram(x=xx, nbinsx=300,
-        marker=dict(
-            color='LightSkyBlue',
-            line=dict(
-                color='black',
-                width=1
-            )))])
+    nanCnt=np.count_nonzero(~np.isnan(xx))
+    if nanCnt==0: 
+        figure = go.Figure(data=[go.Histogram( nbinsx=300,     
+            marker=dict(
+                color='LightSkyBlue',
+                line=dict(
+                    color='black',
+                    width=1
+                )))])
+    else :        
+        figure = go.Figure(data=[go.Histogram(x=xx, nbinsx=300,     
+            marker=dict(
+                color='LightSkyBlue',
+                line=dict(
+                    color='black',
+                    width=1
+                )))])
     figure.update_layout(
-        title={
-        'text': nameTex,
-        'y':0.9,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'},
+#        title={
+#        'text': nameTex,
+#        'y':0.9,
+#        'x':0.5,
+#        'xanchor': 'center',
+#        'yanchor': 'top'},
        yaxis_title_text='Frequency', # yaxis label
        autosize=False,
-       width=1000,
-       height=500
+       width=700,
+       height=450,
+       margin=dict(t=40, b=40, l=0, r=0  )#r=0, b=0, t=0, pad=0 )
     )
+    figure.update_xaxes(showline=True, linewidth=2, linecolor='black')
+    figure.update_yaxes(showline=True, linewidth=2, linecolor='black')
+    figure.update_xaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
+    figure.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
+    
+    paramCorHist1000=paramCorHist.copy()
+    paramCorHist1000.kb1=paramCorHist1000.kb1*1000
+    paramCorHist1000.kb2=paramCorHist1000.kb2*1000
+    paramCorHist1000.kb3=paramCorHist1000.kb3*1000
+    paramCorHist1000.kp1=paramCorHist1000.kp1*1000
+    paramCorHist1000.kp2=paramCorHist1000.kp2*1000
+    paramCorHist1000.kp3=paramCorHist1000.kp3*1000
+    ParanalKbkpTimeQ = ParanalKbkpTime.copy()
+    ParanalKbkpTimeQ.stat[4]= 'Q1'
+    ParanalKbkpTimeQ.stat[6]= 'Q3'
+    header = ['ID','kb1', 'kb2', 'kb3', 'kp1', 'kp2', 'kp3', 'DT1', 'DT2', 'DT3']
+    paramCorHist1000.to_csv(downloadable_descParameters_csv,columns = header,index=False)         
+    ParanalKbkpTimeQ.to_csv(downloadable_descStat_csv,index=False)
+    lista_files = [downloadable_descStat_csv, downloadable_descParameters_csv]
+    downloadable_Descr_zipRand = downloadable_Descr_Nozip+ppGroup+".zip"
+    with zipfile.ZipFile(downloadable_Descr_zipRand, 'w') as zipMe:        
+        for file in lista_files:
+            zipMe.write(file,basename(file), compress_type=zipfile.ZIP_DEFLATED)
+     
     return figure
 
 tabs_styles = {
@@ -427,8 +503,8 @@ app.layout = html.Div([
     html.Div(
         className="pkcalc-banner",
         children=[
-            html.H2("PhenoBCS: a model to phenotype body condition’ dynamics in ruminants"),
-        ],
+            html.H2("PhenoBR: a model to phenotype body condition’ dynamics in ruminants"),
+        ], style={'margin-bottom': '20px'} 
     ),
           
         html.Div(id='speck-control-tabs', className='control-tabs', children=[ 
@@ -441,37 +517,71 @@ app.layout = html.Div([
                     children=html.Div(className='control-tabBB', children=[
                       html.Div(
                            [
-                            html.P('Author #1 György Kövér', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
-                            html.P('Author #2 György Kövér', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
-                            html.H4(className='what-isSS', children='What is PhenoBR?', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
-                            html.P('PhenoBR is a generic dynamic model, based on a system of ordinary differential equations. ' 
-                               'Its aim is to describe the BCS variations of ruminants over several productive cycles. '
-                               'The animal model used in this work is the reproductive ewe, during its whole lifespan. '
-                               'The parameters of this model represent animal characteristics in terms of its capacities '
-                               'to mobilize and to restore BR in function of the physiological point in a given production cycle. '
-                               'Two main types of parameters are expected. First ones are time related parameters '
-                               '(i.e. time related to the beginning of BR mobilization and the interval of BR mobilization '
-                               'period for each productive cycle). The second category of parameters are related to the intensity '
-                               'of each BR mobilization period and then the capacity for recovering initial BR status.', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}) 
-                           ],
-                                 style={'width': '50%','height': '50px','vertical-align': 'middle',
+                            
+                           
+                         html.Div(
+                           [ 
+                            html.P(children=[
+                                    html.Strong('What is PhenoBR:')]),
+                            html.P(children=[
+                                   'PhenoBR is a software to support phenotyping of ruminant robustness when facing frequent negative '
+                                   ' energy balances throughout their reproductive cycles. This information is of main concern in the'
+                                   ' context of genetic selection for robustness and resilience. Body reserves (BR) are the main sources of energy in'
+                                   ' ruminants facing negative energy balance challenges e.g. during highly demanding reproductive'
+                                   ' cycles or feed scarcity periods. PhenoBR is based on a dynamic model describing the variations'
+                                   ' of Body condition score as the indicator of the body reserves in ruminants.'])
+                           ], style={'background-color': 'lightblue','padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px'} 
+                            ),
+                            html.P(children=[html.Strong('Authors:'),
+                                             ' Masoomeh Taghipoor, György Kövér, Dominique Hazard, Eliel Gonzales, Tiphaine Macé'
+                                            ], style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
+                            ],     style={'width': '50%','height': '50px','vertical-align': 'middle',
                                         'display': 'table-cell',
                                         'margin': '0px',
                                         'padding': '0px',
                                      #   'background-color': 'lightblue'
                                         }),
                        html.Div([
-                                  html.Img(src=app.get_asset_url('img4.png'), style={'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'})
+                                  html.Img(src=app.get_asset_url('img4.png'), style={'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}),
+                                  html.P(children=[
+                                             'The scheme represent the regulations of the model for one productive cycle. '
+                                             'Flux to BCS is regulated by the difference between \(BCS_i\)  and the \(BCS_m\). '
+                                             'The flux to  \(p_i\)  is activated in the interval \([t_b^i,t_e^i ]\)  and will stop '
+                                             'when it reaches \(p_m\).  From the beginning of the perturbation, the decrease of \(BCS_i\) '
+                                             'is counterbalanced by all internal physiological mechanisms of the ewes looking to '
+                                             'keep the \(BCS_i\) close to \(BCS_m\).'
+                                            ], style={'width': '500px','background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid','margin-left': 'auto', 'margin-right': 'auto'}), 
+                                       html.Div(
+                                                id="download-areaDataset",
+                                                className="section",
+                                                children=[
+                                                  html.Form(
+                                                        action=downloadable_BCSDataSet_zip,
+                                                        method="get", 
+                                                        children=[
+                                                            html.Button(
+                                                                className="button",
+                                                                type="submit",
+                                                                title ="Download the raw dataset as a zip file",
+                                                                children=[
+                                                                    "download"
+                                                                ],style={'display': 'inline-block','border': '2px solid rgb(2, 21, 70)'}
+                                                            )
+                                                        ]
+                                                    )
+                                                  
+                                                ],style={'display': 'block','margin-top': '20px','margin-left': '200px','margin-right': 'auto'}
+                                            ),
                                 ],
-                                 style={'width': '65%',
-                                        'display': 'table-cell',
+                                 style={#'width': '65%',
+                                        'display': 'table-cell','margin-left': 'auto','margin-right': 'auto','text-align':'center'
                                      #   'background-color': 'lightblue'
-                                        })
+                                        }) 
 
                         ])
                 ), 
                 dcc.Tab(
-                    label='The BR-NEB model',
+                    label='The PhenoBR model',
                     value='what-is2',
                     style=tab_style, selected_style=tab_selected_style,
                     children=html.Div(className='control-tab', children=[
@@ -499,12 +609,13 @@ app.layout = html.Div([
                         ])
                 ), 
                 dcc.Tab(
-                    label='Response to NEB challenge ',
+                    label='Individual response',
                     value='what-is3',style=tab_style, 
                     selected_style=tab_selected_style,
                     children=html.Div(className='control-tab', children=[
-                      html.H6(children='Characterize the response of one animal to NEB challenge during one or several productive cycle', 
-                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'7px','vertical-align': 'middle','border-width': 'thin','border-style':'solid'}),
+                      html.P(children='Characterize the response of one animal to NEB challenge during one or several productive cycle', 
+                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'20px','vertical-align': 'middle',
+                                                      'border-width': 'thin','border-style':'solid','text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
                       html.Div(
                            [
 #############                             
@@ -523,7 +634,7 @@ app.layout = html.Div([
                                                              { 'label': 'Ewes with parity: 13', 'value': 'G13' },
                                                              { 'label': 'Ewes with parity: 23', 'value': 'G23' },
                                                              { 'label': 'Ewes with parity: 123', 'value': 'G123' },
-                                                             { 'label': 'All the Ewes in the dataset', 'value': 'ALL' }
+                                                             { 'label': 'The complete datasett', 'value': 'ALL' }
                                                             ],
                                                     value='G123',
                                                     clearable=False,
@@ -560,7 +671,7 @@ app.layout = html.Div([
                                                             config={
                                                                'displayModeBar': False},
                                                             style={'margin': '0px','margin-top': '7px','margin-right': '7px',
-                                                                   'padding': '0px','border-width': 'thin','border-style':'solid'}
+                                                                   'padding': '0px'}
                                                             ),             
                                                     ],
                                                 style={'margin': 'auto'}),          
@@ -612,22 +723,10 @@ app.layout = html.Div([
                                                 ],
                                                 ),
                                         html.Div(
+                                                id="download-areaBCS",
                                                 className="section",
                                                 children=[
-                                                  html.Form(
-                                                        action=downloadable_BCSDataSim_zip,
-                                                        method="get", 
-                                                        children=[
-                                                            html.Button(
-                                                                className="button",
-                                                                type="submit",
-                                                                title ="Download the parameters, the measured and simulated BCS data as a zip file",
-                                                                children=[
-                                                                    "download"
-                                                                ],style={'border': '2px solid rgb(2, 21, 70)'}
-                                                            )
-                                                        ],style={'margin-top': '15px'}
-                                                    )
+                                                 
                                                 ]
                                             )
                            ],   
@@ -639,11 +738,12 @@ app.layout = html.Div([
                         ])
                 ), 
                 dcc.Tab(
-                    label='Descriptive analysis',
+                    label='Group analysis',
                     value='what-is4',style=tab_style, 
                     selected_style=tab_selected_style,
-                    children=html.Div(className='control-tab', children=[ html.H6(children='Characteristics of a selected group of animals  -  Descriptive analysis', 
-                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'7px','vertical-align': 'middle','border-width': 'thin','border-style':'solid'}),
+                    children=html.Div(className='control-tab', children=[ html.P(children='Characteristics of a selected group of animals  -  Descriptive analysis', 
+                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'20px','vertical-align': 'middle',
+                                                      'border-width': 'thin','border-style':'solid','text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
                       html.Div(
                            [
 #############                             
@@ -662,7 +762,7 @@ app.layout = html.Div([
                                                              { 'label': 'Ewes with parity: 13', 'value': 'G13' },
                                                              { 'label': 'Ewes with parity: 23', 'value': 'G23' },
                                                              { 'label': 'Ewes with parity: 123', 'value': 'G123' },
-                                                             { 'label': 'All the Ewes in the dataset', 'value': 'ALL' }
+                                                             { 'label': 'The complete dataset', 'value': 'ALL' }
                                                             ],
                                                     value='G123',
                                                     clearable=False,
@@ -670,28 +770,9 @@ app.layout = html.Div([
                                                     style={'margin': '0px','margin-right': '35px',
                                                            'padding': '0px'},),
                                             ],
-                                            style={'width': '280px',
+                                            style={'width': '100%',
                                                    'vertical-align': 'middle'}),
               
-                                       html.Div(
-                                                className="section",
-                                                children=[
-                                                  html.Form(
-                                                        action=downloadable_BiVar_zip,
-                                                        method="get", 
-                                                        children=[
-                                                            html.Button(
-                                                                className="button",
-                                                                type="submit",
-                                                                title ="Under Construction",
-                                                                children=[
-                                                                    "download"
-                                                                ],style={'border': '2px solid rgb(2, 21, 70)'}
-                                                            )
-                                                        ]
-                                                    )
-                                                ],style={'display': 'inline-block','vertical-align': 'middle','margin-top': '400px','margin-left': '50',}
-                                            ),
    
                                                              
                                                     ],
@@ -699,7 +780,7 @@ app.layout = html.Div([
 #############          
 #############                    
                            ],
-                                 style={'width': '20%',
+                                 style={'width': '25%',
                                         'display': 'inline-block', 'margin-left': 'auto', 'margin-right': 'auto',
                                         'padding': '0',
                                         'vertical-align': 'top'
@@ -720,7 +801,7 @@ app.layout = html.Div([
                                                      {"name":"\(\Delta T^1\)", "id": "DT1", 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)},
                                                      {"name":"\(\Delta T^2\)", "id": "DT2", 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)},
                                                      {"name":"\(\Delta T^3\)", "id": "DT3", 'type': 'numeric', 'format': Format(precision=1, scheme=Scheme.fixed)},
-                                                     {"name":"RSS", "id": "RSS", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)}
+                                                     {"name":"\(RSE\)", "id": "RSS", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)}
                                                     ],
                                             style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'maxWidth': '120px','padding': '2py' },
                                             style_table={'textAlign': 'center', 'maxHeight': 400},
@@ -739,11 +820,11 @@ app.layout = html.Div([
                                     [         
                                             dcc.Graph(
                                                 id = 'graphHist',    
-                                                figure=hist_graph(hist_Var),
+                                                figure=hist_graph(hist_Var,'G123'),
                                                             config={
                                                                'displayModeBar': False},
                                                             style={'margin': '0px','margin-top': '7px','margin-right': '7px',
-                                                                   'padding': '0px','border-width': 'thin','border-style':'solid'}
+                                                                   'padding': '0px'}
                                                             )
                                     ],
                                     style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}
@@ -757,7 +838,7 @@ app.layout = html.Div([
                                                                              dict(label = '$ k_{p}^{1} $', value = 'kp1'),
                                                                              dict(label = '$ k_{p}^{2} $', value = 'kp2'),
                                                                              dict(label = '$ k_{p}^{3} $', value = 'kp3'),
-                                                                             dict(label = '$ RSS $', value = 'RSS'),
+                                                                             dict(label = '$ RSE $', value = 'RSS'),
                                                                              dict(label = '$ t_{b}^{1} $', value = 'tb1'),
                                                                              dict(label = '$ t_{b}^{2} $', value = 'tb2'),
                                                                              dict(label = '$ t_{b}^{3} $', value = 'tb3'),
@@ -772,10 +853,17 @@ app.layout = html.Div([
                                     ],
                                     style={ 'display': 'inline-block',"vertical-align": "top"}
                                     ),
+                                       html.Div(
+                                                id="download-areaDescr",
+                                                className="section",
+                                                children=[
+                                                
+                                                ],style={'display': 'inline-block','vertical-align': 'middle','margin-top': '10px','margin-left': '200px'}    #,'float': 'right'
+                                            ),
                                     
                                     
                            ],   
-                                 style={'width': '80%',
+                                 style={'width': '75%',
                                         'display': 'inline-block',
                                         'padding': '0',
                                         'vertical-align': 'middle','margin': 'auto','text-align': 'center'
@@ -788,8 +876,9 @@ app.layout = html.Div([
                     value='what-is5',style=tab_style, 
                     selected_style=tab_selected_style,
                     children=html.Div(className='control-tab', children=[
-                      html.H6(children='Characteristics of a selected group of animals  -  Correlation analysis', 
-                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'7px','vertical-align': 'middle','border-width': 'thin','border-style':'solid'}),
+                      html.P(children='Characteristics of a selected group of animals  -  Correlation analysis', 
+                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'20px','vertical-align': 'middle',
+                                                      'border-width': 'thin','border-style':'solid','text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
                       html.Div(
                            [
 #############                             
@@ -808,50 +897,31 @@ app.layout = html.Div([
                                                              { 'label': 'Ewes with parity: 13', 'value': 'G13' },
                                                              { 'label': 'Ewes with parity: 23', 'value': 'G23' },
                                                              { 'label': 'Ewes with parity: 123', 'value': 'G123' },
-                                                             { 'label': 'All the Ewes in the dataset', 'value': 'ALL' }
+                                                             { 'label': 'The complete dataset', 'value': 'ALL' }
                                                             ],
                                                     value='G123',
                                                     clearable=False,
                                                     optionHeight = 24,
-                                                    style={'margin': '0px','margin-right': '35px',
+                                                    style={'margin-left': 'auto','margin-right': 'auto',
                                                            'padding': '0px'},),
                                             ],
                                             style={'width': '280px',
-                                                   'display': 'inline-block','vertical-align': 'middle'}),
+                                                   'display': 'inline-block','vertical-align': 'middle','margin-left': 'auto','margin-right': 'auto'}),
               
-                                       html.Div(
-                                                className="section",
-                                                children=[
-                                                  html.Form(
-                                                        action=downloadable_BiVar_zip,
-                                                        method="get", 
-                                                        children=[
-                                                            html.Button(
-                                                                className="button",
-                                                                type="submit",
-                                                                title ="Download the parameters, the measured and simulated BCS data as a zip file",
-                                                                children=[
-                                                                    "download"
-                                                                ],style={'display': 'inline-block','border': '2px solid rgb(2, 21, 70)'}
-                                                            )
-                                                        ]
-                                                    )
-                                                ],style={'display': 'inline-block','vertical-align': 'middle','margin-left': '185px',}
-                                            ),
    
                                                              
-                                                    ],
+                                                    ],style={'margin-left': 'auto','margin-right': 'auto'},
                                                 ), 
 #############          
                                     
                                 html.Div( 
                                     children=[  
                                                 dcc.Graph(id='graphHeat',
-                                                            figure=heat_plot(),
+                                                            figure=heat_plot('G123'),
                                                             config={
                                                                'displayModeBar': False},
                                                             style={'margin': '0px','margin-top': '7px','margin-right': '7px',
-                                                                   'padding': '0px','border-width': 'thin','border-style':'solid'}
+                                                                   'padding': '0px'}
                                                             ),             
                                                     ],
                                                 style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}),          
@@ -925,8 +995,15 @@ app.layout = html.Div([
                                                             config={
                                                                'displayModeBar': False},
                                                             style={'margin': '0px','margin-top': '7px','margin-right': '7px',
-                                                                   'padding': '0px','border-width': 'thin','border-style':'solid'}
-                                                            ),             
+                                                                   'padding': '0px'}
+                                                            ),   
+                                       html.Div(
+                                                id="download-area",
+                                                className="section",
+                                                children=[
+                                                  
+                                                ],style={'display': 'block','margin-top': '10px','margin-left': 'auto','margin-right': 'auto'}
+                                            ),          
                                                     ],
                                                 style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}), 
                            ],   
@@ -946,75 +1023,75 @@ app.layout = html.Div([
             }),
                 
         ]),
-                        
-                                html.P(
-                                    id="instructions",
-                                    children="Authors: X. Y."
-                                ),
-                                html.P(
-                                    id="instructions2",
-                                    children="The ewes are groupped by the number of their parities."
-                                    " Select a group then select a ewe by the rightmost dropdown list."
-                                ),
-           
+                                   
      
-    html.Div(
-        [
-            dash_table.DataTable(
-                id='table',
-                columns=[{"name":"Physiological stages for BW", "id": "BW.time"},
-                         {"name":"Physiological stages for BCS", "id": "BCS.time"},
-                         {"name":"Year", "id": "Year"},
-                         {"name":"Parity", "id": "Parity"},
-                         {"name":"Age at first mating", "id": "Age_mating"},
-                         {"name":"Litter size", "id": "LS"},
-                         {"name":"Numerical stages", "id": "state.num"},
-                         {"name":"Days", "id": "day"},
-                         {"name":"BW", "id": "BW"},
-                         {"name":"BCS", "id": "BCS"},
-                         {"name":"BCS maximum", "id": "BCSm"},
-                         {"name":"BCS before FDA", "id": "BCS1"}
-                        ],
-                style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'maxWidth': '120px','padding': '2py' },
-                style_table={'textAlign': 'center', 'overflowX': 'scroll','maxHeight': 400},
-                data=pkdata.to_dict('records'),
-                style_header=table_header_style,
-                fixed_rows={'headers': True, 'data': 0}
-            )
-        ],
-        ),
-                                html.P(
-                                    id="instructionsA",
-                                    children="Estimation of the model parameters"
-                                ),
-                                html.P(
-                                    id="instructionsA2",
-                                    children="The table below contains the identification of the ewe,"
-                                    " the number of parities she had, the values of tb te kp kb and the value of the residual (opti)."
-                                ),
-    
-                                html.P(
-                                    id="instructionsB",
-                                    children="Simulation $y = \\begin{cases} 0 & x < 0 \\\\ x & x \ge 0 \\end{cases}$ based on the estimated parameters"
-                                ),
-                                html.P(
-                                    id="instructionsB2",
-                                    children="The last step was made to select only a portion of ewes, "
-                                    "for example ewes that do not match correctly with the model "
-                                    "in order to observe their parameters associated with a graph (below)."
-                                ),
+                              
    
 ])
+          
+def build_download_buttonBCS(uri):
+    """Generates a download button for the resource"""
+    button = html.Form(
+                                                        action=uri,
+                                                        method="get",
+                                                        children=[
+                                                            html.Button(
+                                                                className="button",
+                                                                type="submit",
+                                                                title ="Download the parameters, the measured and simulated BCS data as a zip file",
+                                                                children=[
+                                                                    "download"
+                                                                ],style={'border': '2px solid rgb(2, 21, 70)'}
+                                                            )
+                                                        ],style={'margin-top': '15px'}
+                                                    )        
+    return button       
 
+def build_download_buttonDescr(uri):
+    """Generates a download button for the resource"""
+    button = html.Form(
+                                                        action=uri,
+                                                        method="get", 
+                                                        children=[
+                                                            html.Button(
+                                                                className="button",
+                                                                type="submit",
+                                                                title ="Download the parameters of the selected parity group and the descriptive statistics as a zip file",
+                                                                children=[
+                                                                    "download"
+                                                                ],style={'display': 'inline-block','border': '2px solid rgb(2, 21, 70)'}
+                                                            )
+                                                        ]
+                                                    )
+    return button
+
+# uri = downloadable_BiVar_zip
+def build_download_button(uri):
+    """Generates a download button for the resource"""
+    button = html.Form(
+                                                        action=uri,
+                                                        method="get", 
+                                                        children=[
+                                                            html.Button(
+                                                                className="button",
+                                                                type="submit",
+                                                                title ="Download the parameters of the selected parity group and the correlation coefficients as a zip file",
+                                                                children=[
+                                                                    "download"
+                                                                ],style={'display': 'inline-block','border': '2px solid rgb(2, 21, 70)'}
+                                                            )
+                                                        ]
+                                                    )
+    return button
 
 @app.callback(
     [    
     dash.dependencies.Output("PKSubject", "options"),
     ],
-    [dash.dependencies.Input("parity", "value"),dash.dependencies.Input("input-radio-button", "value"),
+    [dash.dependencies.Input("parity", "value"),
      ],
 )
-def update_date_dropdown(pGroup,name):
+def update_date_dropdown(pGroup):
     global paramCor
     if pGroup == 'ALL': 
         paramCor = paramCor_Orig.copy()
@@ -1027,28 +1104,30 @@ def update_date_dropdown(pGroup,name):
     [    
     dash.dependencies.Output("tableKbkpTime", "data"),
     dash.dependencies.Output('graphHist', 'figure'),
+    dash.dependencies.Output("download-areaDescr", "children"),
     ],
     [dash.dependencies.Input("parityHist", "value"),dash.dependencies.Input("input-radio-button", "value"),]
 )
 def update_date_dropdownHist(pGroup,name):
     global paramCorHist
     global hist_Var 
+    global ParanalKbkpTime
+    global downloadable_Descr_zipRand
     hist_Var = name
-    #print(pGroup)
-    print(name)
     if pGroup == 'ALL': 
         paramCorHist = paramCor_Orig.copy()
     else: 
         paramCorHist = paramCor_Orig[paramCor_Orig.Group == pGroup]
     ParanalKbkpTime = descriptives()
-    histfigure = hist_graph(hist_Var)
-    return ParanalKbkpTime.to_dict('records'),histfigure
+    histfigure = hist_graph(hist_Var,pGroup)
+    return ParanalKbkpTime.to_dict('records'),histfigure,build_download_buttonDescr(downloadable_Descr_zipRand)
 
 
 @app.callback(
     [    
     dash.dependencies.Output('Scatter-graph', 'figure'),
     dash.dependencies.Output('graphHeat', 'figure'),
+    dash.dependencies.Output("download-area", "children"),
     ],
     [dash.dependencies.Input("parityBiVar", "value"),
      dash.dependencies.Input('XVar', 'value'),dash.dependencies.Input('YVar', 'value')],
@@ -1057,41 +1136,41 @@ def update_date_dropdownBivar(pGroup,pXVar,pYVar):
     global paramCorBiVar
     global sc_X
     global sc_Y
+    global downloadable_BiVar_zipRand
     sc_X = pXVar
     sc_Y = pYVar
     if pGroup == 'ALL': 
         paramCorBiVar = paramCor_Orig.copy()
     else: 
         paramCorBiVar = paramCor_Orig[paramCor_Orig.Group == pGroup]
-    heatfigure = heat_plot()
+    heatfigure = heat_plot(pGroup)
     scatterfigure=scatter_plot()
-    return scatterfigure,heatfigure
+    return scatterfigure,heatfigure,build_download_button(downloadable_BiVar_zipRand)
 
 @app.callback(
     [
     dash.dependencies.Output('BCS-graph', 'figure'),
-    dash.dependencies.Output('table', 'data'),
     dash.dependencies.Output('tableFich', 'data'),
     dash.dependencies.Output('tableFich2', 'data'),
+    dash.dependencies.Output("download-areaBCS", "children"),
     ],
     [dash.dependencies.Input('PKSubject', 'value')])
 def display_table(Ewe): 
     global tb1, tb2, tb3, te1, te2, te3, BCSm, Pmax
-    dffTFich = fichierfinal[fichierfinal.ID==int(Ewe)]
+    global downloadable_BCSDataSim_zipRand
+    dffTFich = fichierfinal[fichierfinal.ID==int(Ewe)].copy()
     dffTFich['DT'] = dffTFich['te']-dffTFich['tb']
     dffTFich['kb'] = dffTFich['kb']*1000
     dffTFich['kp'] = dffTFich['kp']*1000
     header = ['ID','parity','kb','kp','tb','DT']
     dffTFich.to_csv(downloadable_parameters_csv,columns = header,index=False)
     dffT = pkdata[pkdata.Ewe==int(Ewe)]
-    #print(len(dff))
-    dff = dffT[pd.notnull(dffT.BCS1)]
-    dffM = dffT[pd.notnull(dffT.BCS1)]
+    dff = dffT[pd.notnull(dffT.BCS1)].copy()
+    dffM = dffT[pd.notnull(dffT.BCS1)].copy()
     dffM['BCS'] = dffM['BCS1']
     dffM['ID'] = int(Ewe)
     header = ['ID','Parity','day','BCS']
     dffM.to_csv(downloadable_BCSData_csv,columns = header,index=False)
-    #print(len(dff))
     figure = go.Figure(data=go.Scatter(x=dff.day, y=dff.BCS1, mode='markers',showlegend=False, name='BCS',
         marker=dict(
             color='rgba(0, 0, 0, 0.0)',
@@ -1102,18 +1181,19 @@ def display_table(Ewe):
             )
         )))
     figure.update_layout(xaxis_title="days of age", yaxis_title="BCS")
-    figure.update_layout(
-        title={
-        'text': 'Ewe {}'.format(Ewe),
-        'y':0.9,
-        'x':0.5,
-        'xanchor': 'center',
-        'yanchor': 'top'})
+#    figure.update_layout(
+#        title={
+#        'text': 'Ewe {}'.format(Ewe),
+#        'y':0.9,
+#        'x':0.5,
+#        'xanchor': 'center',
+#        'yanchor': 'top'})
     figure.update_xaxes(range=[1, 1100])
     figure.update_yaxes(range=[2, 4])
 
     figure.update_layout(
-        height=500
+        height=500,
+        margin=dict(t=40, b=40 )#r=0, b=0, t=0, pad=0 )
     )
 
 
@@ -1157,6 +1237,10 @@ def display_table(Ewe):
     sol = solve_ivp(BCSModel2, [0, timesMax], yinit,t_eval=times, atol = 1e-10, rtol = 1e-10, args=argsB, dense_output=False)
 
     figure.add_trace(go.Scatter(x=times, y=sol.y[6,:],mode='lines',line=go.scatter.Line(color="blue"),showlegend=False, name='BSpline'))
+    figure.update_xaxes(showline=True, linewidth=2, linecolor='black')
+    figure.update_yaxes(showline=True, linewidth=2, linecolor='black')
+    figure.update_xaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
+    figure.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
                           
     dataset_sim = pd.DataFrame({'day': times, 'BCS_sim': sol.y[6,:]})
     dataset_sim['ID'] = int(Ewe)
@@ -1164,11 +1248,11 @@ def display_table(Ewe):
     dataset_sim.to_csv(downloadable_BCSSim_csv,columns = header,index=False)
     
     lista_files = [downloadable_parameters_csv,downloadable_BCSData_csv,downloadable_BCSSim_csv]
-    with zipfile.ZipFile(downloadable_BCSDataSim_zip, 'w') as zipMe:        
+    downloadable_BCSDataSim_zipRand = downloadable_BCSDataSim_Nozip+str(Ewe)+".zip"
+    with zipfile.ZipFile(downloadable_BCSDataSim_zipRand, 'w') as zipMe:        
         for file in lista_files:
             zipMe.write(file,basename(file), compress_type=zipfile.ZIP_DEFLATED)
-            
-    return figure,dffT.to_dict('records'),dffTFich.to_dict('records'),dffTFich.to_dict('records')
+    return figure,dffTFich.to_dict('records'),dffTFich.to_dict('records'),build_download_buttonBCS(downloadable_BCSDataSim_zipRand)
 
 
 
