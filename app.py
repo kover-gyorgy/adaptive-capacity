@@ -81,6 +81,13 @@ with zipfile.ZipFile(downloadable_BCSDataSet_zip, 'w') as zipMe:
     zipMe.write(downloadable_BCSDataSet_csv,basename(downloadable_BCSDataSet_csv), compress_type=zipfile.ZIP_DEFLATED)
 
 
+ggtb1=np.NaN
+ggtb2=np.NaN
+ggtb3=np.NaN
+ggte1=np.NaN
+ggte2=np.NaN
+ggte3=np.NaN
+
 #days of measures for p1, p2 and p3 
 d_P1 = [0,40,80,160,190,230,250,310,330]
 d_P2 = [x+(2-1)*360 for x in d_P1]
@@ -110,9 +117,9 @@ def TimePosTer(Time, t1):
   else:
       return(0)
  
-def BCSModel2(Time, State, kb1, kb2, kb3, kp1, kp2, kp3): 
+def BCSModel2(Time, pState, kb1, kb2, kb3, kp1, kp2, kp3): 
     global tb1, tb2, tb3, te1, te2, te3, BCSm, Pmax
-    BCS1,BCS2,BCS3,P1,P2,P3,BCS = State
+    BCS1,BCS2,BCS3,P1,P2,P3,BCS = pState
     if math.isnan(tb1):  #absence of 1st pertrubation
         tb1=0
         te1=0
@@ -376,7 +383,275 @@ def scatter_plot():
     figure.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
         
     return figure
+ 
 
+ 
+def PhenoBR(Time, pState, kb1, kb2, kb3, kp1, kp2, kp3, tb1, tb2, tb3, te1, te2, te3, BCSm, Pmax): 
+    BCS1,BCS2,BCS3,P1,P2,P3,BCS = pState
+    if math.isnan(tb1):  #absence of 1st pertrubation
+        tb1=0
+        te1=0
+        kb1=0
+    if math.isnan(tb2):  #absence of 2nd pertrubation
+        tb2=tb2N
+        te2=0
+        kb2=0
+    if math.isnan(tb3):  #absence of 3d pertrubation
+        kp3=0
+        tb3=tb3N
+        te3=0
+        kb3=0  
+    dBCS1 =  kb1*(BCSm -BCS1)*TimePosBis(Time, tb1,tb2)- kp1*(Pmax - P1)*TimePosBis(Time, tb1,te1)
+    dBCS2 =  kb2*(BCSm -BCS2)*TimePosBis(Time, tb2,tb3)- kp2*(Pmax - P2)*TimePosBis(Time, tb2,te2)
+    dBCS3 =  kb3*(BCSm -BCS3)*TimePosTer(Time, tb3)- kp3*(Pmax - P3)*TimePosBis(Time, tb3,te3)    
+    dP1   =  kp1*(Pmax - P1)*TimePosBis(Time, tb1,te1)
+    dP2   =  kp2*(Pmax - P2)*TimePosBis(Time, tb2,te2)
+    dP3   =  kp3*(Pmax - P3)*TimePosBis(Time, tb3,te3)    
+    dBCS  = (kb1*(BCSm -BCS1)*TimePosBis(Time, tb1,tb2)- kp1*(Pmax - P1)*TimePosBis(Time, tb1,te1) + 
+             kb2*(BCSm -BCS2)*TimePosBis(Time, tb2,tb3) - kp2*(Pmax - P2)*TimePosBis(Time, tb2,te2)+ 
+             kb3*(BCSm -BCS3)*TimePosTer(Time, tb3)- kp3*(Pmax - P3)*TimePosBis(Time, tb3,te3))
+    
+    return([ dBCS1,dBCS2,dBCS3,dP1,dP2,dP3,dBCS])
+    
+def PhenoBR_Solve():
+    global ggtb1,ggtb2,ggtb3,ggte1,ggte2,ggte3
+    
+    Pmax=2
+    BCSm=3.5
+    BCSopt=BCSm-0.5
+    tb1=0
+    tb2= np.nan
+    tb3=728
+    te1=250
+    te2=550
+    te3=900
+    
+    ggtb1=tb1
+    ggtb2=tb2
+    ggtb3=tb3
+    ggte1=te1
+    ggte2=te2
+    ggte3=te3
+    
+    kb1= 2e-3
+    kb2= 3e-3
+    kb3= 3e-3
+    kp1= 6e-3
+    kp2= 6e-3
+    kp3= 6e-3
+    
+    
+    initvals_BCS1=3
+    initvals_BCS2=2.5
+    initvals_BCS3=2.6
+    initvals_p1=0
+    initvals_p2=0
+    initvals_p3=0
+    initvals_BCS=3
+
+    argsB = (kb1, kb2, kb3, kp1, kp2, kp3, tb1, tb2, tb3, te1, te2, te3, BCSm, Pmax)
+    
+    yinit = [initvals_BCS1, initvals_BCS2, initvals_BCS3, initvals_p1, initvals_p2, initvals_p3, initvals_BCS]
+    
+    if not math.isnan(tb1):
+        yinit = [initvals_BCS1, initvals_BCS2, initvals_BCS3, initvals_p1, initvals_p2, initvals_p3, initvals_BCS1]
+    elif (not math.isnan(tb2)) and (math.isnan(tb1)):
+        yinit = [initvals_BCS1, initvals_BCS2, initvals_BCS3, initvals_p1, initvals_p2, initvals_p3, initvals_BCS2]
+    elif (not math.isnan(tb3)) and (math.isnan(tb2)) and (math.isnan(tb1)):
+        yinit = [initvals_BCS1, initvals_BCS2, initvals_BCS3, initvals_p1, initvals_p2, initvals_p3, initvals_BCS3]
+      
+    timesMax  = 1050    
+    times     = np.linspace(0, timesMax, timesMax+1, endpoint=True)
+
+    sol = solve_ivp(PhenoBR, [0, timesMax], yinit,t_eval=times, atol = 1e-10, rtol = 1e-10, args=argsB, dense_output=False)
+    
+    
+    return times,sol
+
+ttTT, ssSS = PhenoBR_Solve() 
+
+def model_plot1(pTimes,pSol):
+    ymin =pSol.y[6,:].min()
+    ymax =pSol.y[6,:].max()
+    figure = go.Figure(data=go.Scatter(x=pTimes, y=pSol.y[6,:],mode='lines',line=go.scatter.Line(color="black"),showlegend=False, name='BCS',
+        ))
+    figure.update_layout(xaxis_title="days of age", yaxis_title="BCS")
+    figure.update_xaxes(range=[-50, 1100])
+    #figure.update_yaxes(range=[2, 4])
+    figure.update_layout(
+        width=600,
+        height=550,
+        #height=510,
+        margin=dict(t=50,  )#r=0, b=0, t=0, pad=0 )
+        )
+    if not math.isnan(ggtb1):
+        figure.add_annotation(dict(
+            x=ggtb1, 
+            y=2, 
+            xref="x",
+            yref="y",
+            showarrow=False,
+            text="$ t_{b}^{1} $",
+            font=dict(size=16,color="blue")
+            ))  
+        figure.add_shape(
+                # Line Vertical
+                dict(
+                    type="line",
+                    x0=ggtb1,
+                    y0=ymin,
+                    x1=ggtb1,
+                    y1=ymax,
+                    line=dict(
+                        color="black",
+                        width=0.25,
+                        dash="dashdot"
+                    )
+        ))
+        figure.add_annotation(dict(
+            x=ggte1, 
+            y=2, 
+            xref="x",
+            yref="y",
+            showarrow=False,
+            text="$ t_{e}^{1} $",
+            font=dict(size=16,color="blue")
+            ))  
+        figure.add_shape(
+                # Line Vertical
+                dict(
+                    type="line",
+                    x0=ggte1,
+                    y0=ymin,
+                    x1=ggte1,
+                    y1=ymax,
+                    line=dict(
+                        color="black",
+                        width=0.25,
+                        dash="dashdot"
+                    )
+        ))
+    if not math.isnan(ggtb2):
+        figure.add_annotation(dict(
+            x=ggtb2, 
+            y=2, 
+            xref="x",
+            yref="y",
+            showarrow=False,
+            text="$ t_{b}^{2} $",
+            font=dict(size=16,color="blue")
+            ))  
+        figure.add_shape(
+                # Line Vertical
+                dict(
+                    type="line",
+                    x0=ggtb2,
+                    y0=ymin,
+                    x1=ggtb2,
+                    y1=ymax,
+                    line=dict(
+                        color="black",
+                        width=0.25,
+                        dash="dashdot"
+                    )
+        ))
+        figure.add_annotation(dict(
+            x=ggte2, 
+            y=2, 
+            xref="x",
+            yref="y",
+            showarrow=False,
+            text="$ t_{e}^{2} $",
+            font=dict(size=16,color="blue")
+            ))  
+        figure.add_shape(
+                # Line Vertical
+                dict(
+                    type="line",
+                    x0=ggte2,
+                    y0=ymin,
+                    x1=ggte2,
+                    y1=ymax,
+                    line=dict(
+                        color="black",
+                        width=0.25,
+                        dash="dashdot"
+                    )
+        ))
+    if not math.isnan(ggtb3):
+        figure.add_annotation(dict(
+            x=ggtb3, 
+            y=2, 
+            xref="x",
+            yref="y",
+            showarrow=False,
+            text="$ t_{b}^{3} $",
+            font=dict(size=16,color="blue")
+            ))  
+        figure.add_shape(
+                # Line Vertical
+                dict(
+                    type="line",
+                    x0=ggtb3,
+                    y0=ymin,
+                    x1=ggtb3,
+                    y1=ymax,
+                    line=dict(
+                        color="black",
+                        width=0.25,
+                        dash="dashdot"
+                    )
+        ))
+        figure.add_annotation(dict(
+            x=ggte3, 
+            y=2, 
+            xref="x",
+            yref="y",
+            showarrow=False,
+            text="$ t_{e}^{3} $",
+            font=dict(size=16,color="blue")
+            )) 
+        figure.add_shape(
+                # Line Vertical
+                dict(
+                    type="line",
+                    x0=ggte3,
+                    y0=ymin,
+                    x1=ggte3,
+                    y1=ymax,
+                    line=dict(
+                        color="black",
+                        width=0.25,
+                        dash="dashdot"
+                    )
+        ))
+    figure.update_xaxes(showline=True, linewidth=2, linecolor='black')
+    figure.update_yaxes(showline=True, linewidth=2, linecolor='black')
+    figure.update_xaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
+    figure.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
+        
+    return figure
+
+def model_plot2(pTimes,pSol):
+        
+    figure = go.Figure(data=go.Scatter(x=pTimes, y=pSol.y[0,:],mode='lines',line=go.scatter.Line(color="black", dash="dashdot", width=1),showlegend=False, name='BCS', ))
+    figure.add_trace(go.Scatter(x=pTimes, y=pSol.y[1,:],mode='lines',line=go.scatter.Line(color="red", dash="dashdot", width=1),showlegend=False, name='BSpline'))
+    figure.add_trace(go.Scatter(x=pTimes, y=pSol.y[2,:],mode='lines',line=go.scatter.Line(color="green", dash="dashdot", width=1),showlegend=False, name='BSpline'))
+    figure.update_layout(xaxis_title="days of age", yaxis_title="BCS")
+    figure.update_xaxes(range=[-50, 1100])
+    #figure.update_yaxes(range=[2, 4])
+    figure.update_layout(
+        width=600,
+        height=550,
+        #height=510,
+        margin=dict(t=50,  )#r=0, b=0, t=0, pad=0 )
+        )      
+    figure.update_xaxes(showline=True, linewidth=2, linecolor='black')
+    figure.update_yaxes(showline=True, linewidth=2, linecolor='black')
+    figure.update_xaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
+    figure.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
+        
+    return figure
 
 def hist_graph(name,ppGroup):
     global downloadable_Descr_zipRand 
@@ -585,27 +860,62 @@ app.layout = html.Div([
                     value='what-is2',
                     style=tab_style, selected_style=tab_selected_style,
                     children=html.Div(className='control-tab', children=[
-                      html.Div(
-                           [
-                            html.P('Author #1 György Kövér', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
-                            html.P('Author #2 György Kövér', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
-                            html.H4(className='what-isSS', children='What is PhenoBR?', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
-                            html.P('PhenoBR is a generic dynamic model, based on a system of ordinary differential equations. ' 
-                               'Its aim is to describe the BCS variations of ruminants over several productive cycles. '
-                               'The animal model used in this work is the reproductive ewe, during its whole lifespan. '
-                               'The parameters of this model represent animal characteristics in terms of its capacities '
-                               'to mobilize and to restore BR in function of the physiological point in a given production cycle. '
-                               'Two main types of parameters are expected. First ones are time related parameters '
-                               '(i.e. time related to the beginning of BR mobilization and the interval of BR mobilization '
-                               'period for each productive cycle). The second category of parameters are related to the intensity '
-                               'of each BR mobilization period and then the capacity for recovering initial BR status.', style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}) 
-                           ],
-                                 style={'width': '50%','height': '50px','vertical-align': 'middle',
-                                        'display': 'table-cell',
-                                        'margin': '0px',
-                                        'padding': '0px',
-                                     #   'background-color': 'lightblue'
-                                        }),
+                      html.P(children='Characteristics of a selected group of animals  -  Correlation analysis', 
+                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'20px','vertical-align': 'middle',
+                                                      'border-width': 'thin','border-style':'solid','text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
+                      html.Div([
+                          html.Div(
+                               [
+                                    html.Div( 
+                                        children=[  
+                                                    dcc.Graph(id='graphHeatA',
+                                                                figure=model_plot1(ttTT,ssSS),
+                                                                config={
+                                                                   'displayModeBar': False},
+                                                                style={'margin': '0px','margin-top': '7px','margin-right': '7px',
+                                                                       'padding': '0px'}
+                                                                ),             
+                                                        ],
+                                                    style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}),          
+                               ],
+                                     style={'width': '50%',
+                                            'display': 'inline-block', 'margin-left': 'auto', 'margin-right': 'auto',
+                                            'padding': '0', 
+                                            'vertical-align': 'top'
+                                            }),
+                          html.Div(
+                               [
+                                    html.Div( 
+                                        children=[  
+                                                    dcc.Graph(id='Scatter-graphB',
+                                                                figure=model_plot2(ttTT,ssSS),
+                                                                config={
+                                                                   'displayModeBar': False},
+                                                                style={'margin': '0px','margin-top': '7px','margin-right': '7px',
+                                                                       'padding': '0px'}
+                                                                ),  
+                                                        ],
+                                                    style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}), 
+                               ],   
+                                     style={'width': '50%',
+                                            'display': 'inline-block',
+                                            'padding': '0',
+                                            'vertical-align': 'middle','margin': 'auto','text-align': 'center'
+                                            }),
+                          ]), 
+                      html.Div([
+                                    html.Div( 
+                                            children=[dcc.Checklist(
+                                                            options=[
+                                                                {'label': 'P1', 'value': 'P1'},
+                                                                {'label': 'P2', 'value': 'P2'},
+                                                                {'label': 'P3', 'value': 'P3'}
+                                                            ],
+                                                            value=['P1', 'P2', 'P3']
+                                                        )
+                                                    ]
+                                            )
+                              ])
                         ])
                 ), 
                 dcc.Tab(
@@ -1266,4 +1576,4 @@ def serve_static(path):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=True)
+    app.run_server(debug=False)
