@@ -23,7 +23,6 @@ from dash.dependencies import Input, Output, State
 import zipfile
 from os.path import basename
 
-
 app = dash.Dash(__name__, external_scripts=[
   'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML',
 ]
@@ -384,7 +383,58 @@ def scatter_plot():
         
     return figure
  
+gP1=True # Parity switched on
+gP2=True
+gP3=True
 
+ggtb1=0
+ggtb2=412
+ggtb3=728
+ggte1=250
+ggte2=550
+ggte3=900
+
+ggtb1_min=0
+ggtb2_min=260
+ggtb3_min=600
+ggte1_min=ggtb1
+ggte2_min=ggtb2
+ggte3_min=ggtb3
+
+ggtb1_max=156
+ggtb2_max=580
+ggtb3_max=959
+ggte1_max=ggtb2
+ggte2_max=ggtb3
+ggte3_max=1050
+
+gkb1 = 2e-3
+gkb2 = 3e-3
+gkb3 = 3e-3
+gkp1 = 6e-3
+gkp2 = 6e-3
+gkp3 = 6e-3
+
+gkb1_min = 0
+gkb2_min = 0
+gkb3_min = 0
+gkp1_min = 1e-3
+gkp2_min = 0
+gkp3_min = 1.4e-3
+
+gkb1_max = 8.5e-3
+gkb2_max = 8.5e-3
+gkb3_max = 8.5e-3
+gkp1_max = 14.7e-3
+gkp2_max = 16.5e-3
+gkp3_max = 10.5e-3
+
+gBCS1 = 3
+gBCS2 = 2.5
+gBCS3 = 2.6
+gBCS  = 3
+
+gn_clicks = 0
  
 def PhenoBR(Time, pState, kb1, kb2, kb3, kp1, kp2, kp3, tb1, tb2, tb3, te1, te2, te3, BCSm, Pmax): 
     BCS1,BCS2,BCS3,P1,P2,P3,BCS = pState
@@ -415,49 +465,54 @@ def PhenoBR(Time, pState, kb1, kb2, kb3, kp1, kp2, kp3, tb1, tb2, tb3, te1, te2,
     
 def PhenoBR_Solve():
     global ggtb1,ggtb2,ggtb3,ggte1,ggte2,ggte3
+    global gP1,gP2,gP3
+    global gBCS1, gBCS2, gBCS3, gBCS
     
     Pmax=2
     BCSm=3.5
     BCSopt=BCSm-0.5
-    tb1=0
-    tb2= np.nan
-    tb3=728
-    te1=250
-    te2=550
-    te3=900
     
-    ggtb1=tb1
-    ggtb2=tb2
-    ggtb3=tb3
-    ggte1=te1
-    ggte2=te2
-    ggte3=te3
+    tb1=ggtb1
+    tb2=ggtb2
+    tb3=ggtb3
+    te1=ggte1
+    te2=ggte2
+    te3=ggte3
+    if not gP1:
+        tb1=np.nan
+    if not gP2:
+        tb2=np.nan
+    if not gP3:
+        tb3=np.nan
     
-    kb1= 2e-3
-    kb2= 3e-3
-    kb3= 3e-3
-    kp1= 6e-3
-    kp2= 6e-3
-    kp3= 6e-3
+    kb1= gkb1
+    kb2= gkb2
+    kb3= gkb3
+    kp1= gkp1
+    kp2= gkp2
+    kp3= gkp3
     
     
-    initvals_BCS1=3
-    initvals_BCS2=2.5
-    initvals_BCS3=2.6
+    initvals_BCS1=gBCS1 
+    initvals_BCS2=gBCS2 
+    initvals_BCS3=gBCS3 
     initvals_p1=0
     initvals_p2=0
     initvals_p3=0
-    initvals_BCS=3
-
+    initvals_BCS=gBCS 
+    
+    #print(kb1)
+    #print(gkb1)
+    
     argsB = (kb1, kb2, kb3, kp1, kp2, kp3, tb1, tb2, tb3, te1, te2, te3, BCSm, Pmax)
     
     yinit = [initvals_BCS1, initvals_BCS2, initvals_BCS3, initvals_p1, initvals_p2, initvals_p3, initvals_BCS]
     
-    if not math.isnan(tb1):
+    if gP1:
         yinit = [initvals_BCS1, initvals_BCS2, initvals_BCS3, initvals_p1, initvals_p2, initvals_p3, initvals_BCS1]
-    elif (not math.isnan(tb2)) and (math.isnan(tb1)):
+    elif gP2 and (not gP1):
         yinit = [initvals_BCS1, initvals_BCS2, initvals_BCS3, initvals_p1, initvals_p2, initvals_p3, initvals_BCS2]
-    elif (not math.isnan(tb3)) and (math.isnan(tb2)) and (math.isnan(tb1)):
+    elif gP3 and (not gP2) and (not gP1):
         yinit = [initvals_BCS1, initvals_BCS2, initvals_BCS3, initvals_p1, initvals_p2, initvals_p3, initvals_BCS3]
       
     timesMax  = 1050    
@@ -473,8 +528,7 @@ ttTT, ssSS = PhenoBR_Solve()
 def model_plot1(pTimes,pSol):
     ymin =pSol.y[6,:].min()
     ymax =pSol.y[6,:].max()
-    figure = go.Figure(data=go.Scatter(x=pTimes, y=pSol.y[6,:],mode='lines',line=go.scatter.Line(color="black"),showlegend=False, name='BCS',
-        ))
+    figure = go.Figure(data=go.Scatter(x=pTimes, y=pSol.y[6,:],mode='lines',line=go.scatter.Line(color="black"),showlegend=False, name='BCS', ))
     figure.update_layout(xaxis_title="days of age", yaxis_title="BCS")
     figure.update_xaxes(range=[-50, 1100])
     #figure.update_yaxes(range=[2, 4])
@@ -634,10 +688,11 @@ def model_plot1(pTimes,pSol):
 
 def model_plot2(pTimes,pSol):
         
-    figure = go.Figure(data=go.Scatter(x=pTimes, y=pSol.y[0,:],mode='lines',line=go.scatter.Line(color="black", dash="dashdot", width=1),showlegend=False, name='BCS', ))
-    figure.add_trace(go.Scatter(x=pTimes, y=pSol.y[1,:],mode='lines',line=go.scatter.Line(color="red", dash="dashdot", width=1),showlegend=False, name='BSpline'))
-    figure.add_trace(go.Scatter(x=pTimes, y=pSol.y[2,:],mode='lines',line=go.scatter.Line(color="green", dash="dashdot", width=1),showlegend=False, name='BSpline'))
+    figure = go.Figure(data=go.Scatter(x=pTimes, y=pSol.y[0,:],mode='lines',line=go.scatter.Line(color="black", dash="dashdot", width=1),showlegend=True, name='BCS1', ))
+    figure.add_trace(go.Scatter(x=pTimes, y=pSol.y[1,:],mode='lines',line=go.scatter.Line(color="red", dash="dashdot", width=1),showlegend=True, name='BCS2'))
+    figure.add_trace(go.Scatter(x=pTimes, y=pSol.y[2,:],mode='lines',line=go.scatter.Line(color="green", dash="dashdot", width=1),showlegend=True, name='BCS3'))
     figure.update_layout(xaxis_title="days of age", yaxis_title="BCS")
+    figure.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
     figure.update_xaxes(range=[-50, 1100])
     #figure.update_yaxes(range=[2, 4])
     figure.update_layout(
@@ -734,7 +789,7 @@ def hist_graph(name,ppGroup):
     paramCorHist1000.kb2=paramCorHist1000.kb2*1000
     paramCorHist1000.kb3=paramCorHist1000.kb3*1000
     paramCorHist1000.kp1=paramCorHist1000.kp1*1000
-    paramCorHist1000.kp2=paramCorHist1000.kp2*1000
+    paramCorHist1000.kp2=paramCorHist1000.kp2*1000 
     paramCorHist1000.kp3=paramCorHist1000.kp3*1000
     ParanalKbkpTimeQ = ParanalKbkpTime.copy()
     ParanalKbkpTimeQ.stat[4]= 'Q1'
@@ -749,6 +804,35 @@ def hist_graph(name,ppGroup):
             zipMe.write(file,basename(file), compress_type=zipfile.ZIP_DEFLATED)
      
     return figure
+    
+def generate_slider(title, _id, _min, _max, _value, _step, display_value):
+    return html.Div(children=[
+                # slider title
+                html.P(children=[title], style={'display': 'inline-block', 'width': '15%', }),   #'line-height': '2vh'
+
+                # slider component
+                html.Div(
+                    html.Div(
+                        children=[
+                            dcc.Slider(
+                                id=_id,
+                                className="custom-slider",
+                                min=_min,
+                                max=_max,
+                                step=_step,
+                                value=_value,
+                            )
+                        ],
+                        style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center', 'height': '100%'}
+                    ),
+                    style={'display': 'inline-block', 'width': '65%',  'padding': '6px',  'vertical-align': 'top'} #'line-height': '2vh','height': '150%',
+                ),
+                
+                # slider value
+                html.P(children=[display_value], id=_id + '-value-display', style={'display': 'inline-block', 'width': '15%', }),   #'line-height': '2vh'
+                
+        ], style={'width': '100%', 'height': '28px', 'position': 'relative', 'z-index': 1}
+    )
 
 tabs_styles = {
     'height': '40px'
@@ -775,6 +859,7 @@ server = app.server
 
 app.layout = html.Div([   
    
+    dcc.Store(id='session', storage_type='session'),
     html.Div(
         className="pkcalc-banner",
         children=[
@@ -805,7 +890,7 @@ app.layout = html.Div([
                                    ' ruminants facing negative energy balance challenges e.g. during highly demanding reproductive'
                                    ' cycles or feed scarcity periods. PhenoBR is based on a dynamic model describing the variations'
                                    ' of Body condition score as the indicator of the body reserves in ruminants.'])
-                           ], style={'background-color': 'lightblue','padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px'} 
+                           ], style={'background-color': 'lightblue','padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
                             ),
                             html.P(children=[html.Strong('Authors:'),
                                              ' Masoomeh Taghipoor, György Kövér, Dominique Hazard, Eliel Gonzales, Tiphaine Macé'
@@ -825,7 +910,7 @@ app.layout = html.Div([
                                              'when it reaches \(p_m\).  From the beginning of the perturbation, the decrease of \(BCS_i\) '
                                              'is counterbalanced by all internal physiological mechanisms of the ewes looking to '
                                              'keep the \(BCS_i\) close to \(BCS_m\).'
-                                            ], style={'width': '500px','background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid','margin-left': 'auto', 'margin-right': 'auto'}), 
+                                            ], style={'width': '500px','background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid','margin-left': 'auto', 'margin-right': 'auto', 'text-align': 'justify'}), 
                                        html.Div(
                                                 id="download-areaDataset",
                                                 className="section",
@@ -868,7 +953,7 @@ app.layout = html.Div([
                                [
                                     html.Div( 
                                         children=[  
-                                                    dcc.Graph(id='graphHeatA',
+                                                    dcc.Graph(id='ModelPlot1',
                                                                 figure=model_plot1(ttTT,ssSS),
                                                                 config={
                                                                    'displayModeBar': False},
@@ -878,7 +963,7 @@ app.layout = html.Div([
                                                         ],
                                                     style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}),          
                                ],
-                                     style={'width': '50%',
+                                     style={'width': '33%',
                                             'display': 'inline-block', 'margin-left': 'auto', 'margin-right': 'auto',
                                             'padding': '0', 
                                             'vertical-align': 'top'
@@ -887,7 +972,7 @@ app.layout = html.Div([
                                [
                                     html.Div( 
                                         children=[  
-                                                    dcc.Graph(id='Scatter-graphB',
+                                                    dcc.Graph(id='ModelPlot2',
                                                                 figure=model_plot2(ttTT,ssSS),
                                                                 config={
                                                                    'displayModeBar': False},
@@ -897,25 +982,69 @@ app.layout = html.Div([
                                                         ],
                                                     style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}), 
                                ],   
-                                     style={'width': '50%',
+                                     style={'width': '33%',
                                             'display': 'inline-block',
                                             'padding': '0',
                                             'vertical-align': 'middle','margin': 'auto','text-align': 'center'
                                             }),
+                          html.Div([
+                                        html.Div(
+                                                children=[dcc.Checklist(id='Checklist_Parity',
+                                                                options=[
+                                                                    {'label': 'Parity #1', 'value': 'P1'},
+                                                                    {'label': 'Parity #2', 'value': 'P2'},
+                                                                    {'label': 'Parity #3', 'value': 'P3'}
+                                                                ],
+                                                                value=['P1', 'P2', 'P3'],
+                                                                labelStyle={'display': 'inline-block', 'margin-top': '0px', 'margin-left': '2vh', 'margin-right': 'auto',  'z-index': '1'}
+                                                            )
+                                                        ],
+                                                style={'width': '90%','margin-bottom': '2vh','margin-left': '10vh','margin-top': '20px',  'z-index': '1'}
+                                                ),
+                                        
+                                        generate_slider("\(k_{b}^{1}\)", "sliderKb1", gkb1_min*1000, gkb1_max*1000, gkb1*1000, 0.01, gkb1*1000),
+                                        generate_slider("\(k_{b}^{2}\)", "sliderKb2", gkb2_min*1000, gkb2_max*1000, gkb2*1000, 0.01, gkb2*1000),
+                                        generate_slider("\(k_{b}^{3}\)", "sliderKb3", gkb3_min*1000, gkb3_max*1000, gkb3*1000, 0.01, gkb3*1000),
+                                        generate_slider("\(k_{p}^{1}\)", "sliderKp1", gkp1_min*1000, gkp1_max*1000, gkp1*1000, 0.01, gkp1*1000),
+                                        generate_slider("\(k_{p}^{2}\)", "sliderKp2", gkp2_min*1000, gkp2_max*1000, gkp2*1000, 0.01, gkp2*1000),
+                                        generate_slider("\(k_{p}^{3}\)", "sliderKp3", gkp3_min*1000, gkp3_max*1000, gkp3*1000, 0.01, gkp3*1000),
+                                        generate_slider("\(t_{b}^{1}\)", "sliderTb1", ggtb1_min, ggtb1_max, ggtb1, 1, ggtb1),
+                                        generate_slider("\(t_{b}^{2}\)", "sliderTb2", ggtb2_min, ggtb2_max, ggtb2, 1, ggtb2),
+                                        generate_slider("\(t_{b}^{3}\)", "sliderTb3", ggtb3_min, ggtb3_max, ggtb3, 1, ggtb3),
+                                        generate_slider("\(\Delta T^1\)", "sliderTe1",ggte1_min, ggte1_max, ggte1, 1, ggte1-ggtb1),
+                                        generate_slider("\(\Delta T^2\)", "sliderTe2",ggte2_min, ggte2_max, ggte2, 1, ggte2-ggtb2),
+                                        generate_slider("\(\Delta T^3\)", "sliderTe3",ggte3_min, ggte3_max, ggte3, 1, ggte3-ggtb3),
+                                        
+                                        generate_slider("\(BCS_{1}\)", "sliderBCS1", 2, 3.5, 3.0, 0.01, 3.0),
+                                        generate_slider("\(BCS_{2}\)", "sliderBCS2", 2, 3.5, 2.5, 0.01, 2.5),
+                                        generate_slider("\(BCS_{3}\)", "sliderBCS3", 2, 3.5, 2.5, 0.01, 2.6),
+                                        #generate_slider("\(BCS\)",     "sliderBCS",  2, 3.5, 3.0, 0.01, 3.0),
+                                        
+                                        
+                                        
+#                                       html.Div(
+#                                                id="Reset-areaDataset",
+#                                                className="section",
+#                                                children=[
+#                                                            html.A(html.Button(
+#                                                                className="button",
+#                                                                id="reset-button",
+#                                                                title ="Reset the controls to their default values",
+#                                                                children=[
+#                                                                    "RESET"
+#                                                                ],style={'display': 'inline-block','margin-top':'30px','margin-left':'150px', 'border': '2px solid rgb(2, 21, 70)'}
+#                                                            ),href='/',)
+#                                                        ]
+#                                            ),
+                                        
+                                        
+                                  ],   
+                                         style={'width': '33%',
+                                                'display': 'inline-block',
+                                                'padding': '0',
+                                                'vertical-align': 'top','margin': 'auto','text-align': 'center'
+                                                })
                           ]), 
-                      html.Div([
-                                    html.Div( 
-                                            children=[dcc.Checklist(
-                                                            options=[
-                                                                {'label': 'P1', 'value': 'P1'},
-                                                                {'label': 'P2', 'value': 'P2'},
-                                                                {'label': 'P3', 'value': 'P3'}
-                                                            ],
-                                                            value=['P1', 'P2', 'P3']
-                                                        )
-                                                    ]
-                                            )
-                              ])
                         ])
                 ), 
                 dcc.Tab(
@@ -1393,6 +1522,117 @@ def build_download_button(uri):
                                                         ]
                                                     )
     return button
+
+#@app.callback(
+#    [    
+#    dash.dependencies.Output("speck-tabs", "value"),
+#    ],
+#    [dash.dependencies.Input("reset-button", "n_clicks"),
+#     ],
+#)
+#def reset_button(pn_click):
+#    if pn_click is None:
+#        return ['what-is']
+#    else:    
+#        return ['what-is2']
+
+@app.callback(  
+    [    
+    dash.dependencies.Output('ModelPlot1', 'figure'),
+    dash.dependencies.Output('ModelPlot2', 'figure'),
+    dash.dependencies.Output('sliderKb1-value-display', component_property='children'),
+    dash.dependencies.Output('sliderKb2-value-display', component_property='children'),
+    dash.dependencies.Output('sliderKb3-value-display', component_property='children'),
+    dash.dependencies.Output('sliderKp1-value-display', component_property='children'),
+    dash.dependencies.Output('sliderKp2-value-display', component_property='children'),
+    dash.dependencies.Output('sliderKp3-value-display', component_property='children'),
+    dash.dependencies.Output('sliderTb1-value-display', component_property='children'),
+    dash.dependencies.Output('sliderTb2-value-display', component_property='children'),
+    dash.dependencies.Output('sliderTb3-value-display', component_property='children'),
+    dash.dependencies.Output('sliderTe1-value-display', component_property='children'),
+    dash.dependencies.Output('sliderTe2-value-display', component_property='children'),
+    dash.dependencies.Output('sliderTe3-value-display', component_property='children'),
+    
+    dash.dependencies.Output('sliderBCS1-value-display', component_property='children'),
+    dash.dependencies.Output('sliderBCS2-value-display', component_property='children'),
+    dash.dependencies.Output('sliderBCS3-value-display', component_property='children'),
+    #dash.dependencies.Output('sliderBCS-value-display', component_property='children'),
+    
+    dash.dependencies.Output('sliderTe1', 'min'),
+    dash.dependencies.Output('sliderTe1', 'max'),
+    dash.dependencies.Output('sliderTb2', 'min'),
+    dash.dependencies.Output('sliderTb2', 'max'),
+    dash.dependencies.Output('sliderTe2', 'min'),
+    dash.dependencies.Output('sliderTe2', 'max'),
+    dash.dependencies.Output('sliderTb3', 'min'),
+    dash.dependencies.Output('sliderTb3', 'max'),
+    dash.dependencies.Output('sliderTe3', 'min'),
+    ],
+    [dash.dependencies.Input("Checklist_Parity", "value"),
+    dash.dependencies.Input("sliderKb1", "value"),
+    dash.dependencies.Input("sliderKb2", "value"),
+    dash.dependencies.Input("sliderKb3", "value"),
+    dash.dependencies.Input("sliderKp1", "value"),
+    dash.dependencies.Input("sliderKp2", "value"),
+    dash.dependencies.Input("sliderKp3", "value"),
+    dash.dependencies.Input("sliderTb1", "value"),
+    dash.dependencies.Input("sliderTb2", "value"),
+    dash.dependencies.Input("sliderTb3", "value"),
+    dash.dependencies.Input("sliderTe1", "value"),
+    dash.dependencies.Input("sliderTe2", "value"),
+    dash.dependencies.Input("sliderTe3", "value"),
+    
+    dash.dependencies.Input("sliderBCS1", "value"),
+    dash.dependencies.Input("sliderBCS2", "value"),
+    dash.dependencies.Input("sliderBCS3", "value"),
+    #dash.dependencies.Input("sliderBCS", "value"),
+    
+    #dash.dependencies.Input("reset-button", "n_clicks"),
+    ]
+)
+    
+def update_model_plot12(pPList,pkb1,pkb2,pkb3,pkp1,pkp2,pkp3,ptb1,ptb2,ptb3,pte1,pte2,pte3,pBCS1,pBCS2,pBCS3
+                          #,pBCS
+                        ):
+    global ttTT, ssSS
+    global gP1,gP2,gP3
+    global gkb1,gkb2,gkb3,gkp1,gkp2,gkp3
+    global gkb1_min,gkb2_min,gkb3_min,gkp1_min,gkp2_min,gkp3_min
+    global gkb1_max,gkb2_max,gkb3_max,gkp1_max,gkp2_max,gkp3_max
+    global ggtb1,ggtb2,ggtb3,ggte1,ggte2,ggte3
+    global ggtb1_min,ggtb2_min,ggtb3_min,ggte1_min,ggte2_min,ggte3_min
+    global ggtb1_max,ggtb2_max,ggtb3_max,ggte1_max,ggte2_max,ggte3_max
+    global gn_clicks
+    global gBCS1, gBCS2, gBCS3, gBCS
+    
+    gP1 = 'P1' in pPList
+    gP2 = 'P2' in pPList
+    gP3 = 'P3' in pPList
+    gkb1 = float(pkb1)/1000
+    gkb2 = float(pkb2)/1000
+    gkb3 = float(pkb3)/1000
+    gkp1 = float(pkp1)/1000
+    gkp2 = float(pkp2)/1000
+    gkp3 = float(pkp3)/1000
+    ggtb1 = ptb1
+    ggtb2 = ptb2
+    ggtb3 = ptb3
+    ggte1 = pte1
+    ggte2 = pte2
+    ggte3 = pte3
+    
+    gBCS1 = pBCS1
+    gBCS2 = pBCS2
+    gBCS3 = pBCS3
+    #gBCS  = pBCS
+#    
+    
+    # print(gkb1*100)
+    ttTT, ssSS = PhenoBR_Solve() 
+    figure1=model_plot1(ttTT,ssSS)
+    figure2=model_plot2(ttTT,ssSS)                                                                                                                                                                                  #te1.min+max tb2.min+max                    te2.mi+max      tb3.min+max               te3.min
+    #return figure1, figure2, round(gkb1*1000,3),round(gkb2*1000,3),round(gkb3*1000,3),round(gkp1*1000,3),round(gkp2*1000,3),round(gkp3*1000,3),ptb1,ptb2,ptb3,pte1-ptb1,pte2-ptb2,pte3-ptb3,pBCS1,pBCS2,pBCS3,pBCS, ptb1,  ptb2, max(260,pte1),min(580,pte2), ptb2,  ptb3, max(600,pte2),min(959,pte3), ptb3,   
+    return figure1, figure2, round(gkb1*1000,3),round(gkb2*1000,3),round(gkb3*1000,3),round(gkp1*1000,3),round(gkp2*1000,3),round(gkp3*1000,3),ptb1,ptb2,ptb3,pte1-ptb1,pte2-ptb2,pte3-ptb3,pBCS1,pBCS2,pBCS3, ptb1,  ptb2, max(260,pte1),min(580,pte2), ptb2,  ptb3, max(600,pte2),min(959,pte3), ptb3,   
 
 @app.callback(
     [    
