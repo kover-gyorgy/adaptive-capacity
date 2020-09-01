@@ -1748,6 +1748,10 @@ def display_table(Ewe):
 
 
     paramCor_ID = paramCor[paramCor["ID"]==int(Ewe)]
+
+    print(paramCor_ID)
+    print(paramCor_ID.iloc[0])
+    print(paramCor_ID.iloc[0].BCSm)
     
     Pmax = 2
     BCSm = paramCor_ID.iloc[0].BCSm
