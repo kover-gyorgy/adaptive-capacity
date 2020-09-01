@@ -893,7 +893,7 @@ app.layout = html.Div([
                            ], style={'background-color': 'lightblue','padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
                             ),
                             html.P(children=[html.Strong('Authors:'),
-                                             ' Masoomeh Taghipoor, György Kövér, Dominique Hazard, Eliel Gonzales, Tiphaine Macé'
+                                             ' Masoomeh Taghipoor, György Kövér, Dominique Hazard, Eliel González-García, Tiphaine Macé'
                                             ], style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
                             ],     style={'width': '50%','height': '50px','vertical-align': 'middle',
                                         'display': 'table-cell',
@@ -1642,12 +1642,15 @@ def update_model_plot12(pPList,pkb1,pkb2,pkb3,pkp1,pkp2,pkp3,ptb1,ptb2,ptb3,pte1
      ],
 )
 def update_date_dropdown(pGroup):
-    global paramCor
+    # This was causing an issue, see: https://dash.plotly.com/sharing-data-between-callbacks
+    # global paramCor
+    filtered_data = []
+
     if pGroup == 'ALL': 
-        paramCor = paramCor_Orig.copy()
+        filtered_data = paramCor_Orig.copy()
     else:
-        paramCor = paramCor_Orig[paramCor_Orig.Group == pGroup]
-    subjectsG = paramCor.ID.unique()
+        filtered_data = paramCor_Orig[paramCor_Orig.Group == pGroup]
+    subjectsG = filtered_data.ID.unique()
     return [[{'label': i, 'value': i} for i in subjectsG]]
 
 @app.callback(
