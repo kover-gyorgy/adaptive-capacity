@@ -1642,14 +1642,12 @@ def update_model_plot12(pPList,pkb1,pkb2,pkb3,pkp1,pkp2,pkp3,ptb1,ptb2,ptb3,pte1
      ],
 )
 def update_date_dropdown(pGroup):
-    #global paramCor
-    print('ez mar a test')
-    test = []
+    global paramCor
     if pGroup == 'ALL': 
-        test = paramCor_Orig.copy()
+        paramCor = paramCor_Orig.copy()
     else:
-        test = paramCor_Orig[paramCor_Orig.Group == pGroup]
-    subjectsG = test.ID.unique()
+        paramCor = paramCor_Orig[paramCor_Orig.Group == pGroup]
+    subjectsG = paramCor.ID.unique()
     return [[{'label': i, 'value': i} for i in subjectsG]]
 
 @app.callback(
