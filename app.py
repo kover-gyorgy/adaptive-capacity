@@ -1642,12 +1642,14 @@ def update_model_plot12(pPList,pkb1,pkb2,pkb3,pkp1,pkp2,pkp3,ptb1,ptb2,ptb3,pte1
      ],
 )
 def update_date_dropdown(pGroup):
-    global paramCor
+    #global paramCor
+    print('ez mar a test')
+    test = []
     if pGroup == 'ALL': 
-        paramCor = paramCor_Orig.copy()
-    else: 
-        paramCor = paramCor_Orig[paramCor_Orig.Group == pGroup]
-    subjectsG = paramCor.ID.unique()
+        test = paramCor_Orig.copy()
+    else:
+        test = paramCor_Orig[paramCor_Orig.Group == pGroup]
+    subjectsG = test.ID.unique()
     return [[{'label': i, 'value': i} for i in subjectsG]]
 
 @app.callback(
@@ -1746,33 +1748,32 @@ def display_table(Ewe):
         margin=dict(t=40, b=40 )#r=0, b=0, t=0, pad=0 )
     )
 
-
     paramCor_ID = paramCor[paramCor["ID"]==int(Ewe)]
-    
-    cached = paramCor_ID.iloc[0]
+
+    print(paramCor)
 
     print(paramCor_ID)
-    print(cached)
-    print(cached.BCSm)
+    print(paramCor_ID.iloc[0])
+    print(paramCor_ID.iloc[0].BCSm)
     
     Pmax = 2
-    BCSm = cached.BCSm
+    BCSm = paramCor_ID.iloc[0].BCSm
     BCSopt=BCSm-0.5
-    tb1 = cached.tb1
-    tb2 = cached.tb2
-    tb3 = cached.tb3
-    te1 = cached.te1
-    te2 = cached.te2
-    te3 = cached.te3
+    tb1 = paramCor_ID.iloc[0].tb1
+    tb2 = paramCor_ID.iloc[0].tb2
+    tb3 = paramCor_ID.iloc[0].tb3
+    te1 = paramCor_ID.iloc[0].te1
+    te2 = paramCor_ID.iloc[0].te2
+    te3 = paramCor_ID.iloc[0].te3
      
     
     paramCor_ID = paramCor_ID.fillna(0)
-    kb1 = cached.kb1
-    kb2 = cached.kb2
-    kb3 = cached.kb3
-    kp1 = cached.kp1
-    kp2 = cached.kp2
-    kp3 = cached.kp3
+    kb1 = paramCor_ID.iloc[0].kb1
+    kb2 = paramCor_ID.iloc[0].kb2
+    kb3 = paramCor_ID.iloc[0].kb3
+    kp1 = paramCor_ID.iloc[0].kp1
+    kp2 = paramCor_ID.iloc[0].kp2
+    kp3 = paramCor_ID.iloc[0].kp3
     
     argsB = (kb1, kb2, kb3, kp1, kp2, kp3)
     
