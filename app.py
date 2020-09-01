@@ -1073,7 +1073,7 @@ app.layout = html.Div([
                                                              { 'label': 'Ewes with parity: 13', 'value': 'G13' },
                                                              { 'label': 'Ewes with parity: 23', 'value': 'G23' },
                                                              { 'label': 'Ewes with parity: 123', 'value': 'G123' },
-                                                             { 'label': 'The complete datasett', 'value': 'ALL' }
+                                                             { 'label': 'The complete dataset', 'value': 'ALL' }
                                                             ],
                                                     value='G123',
                                                     clearable=False,
