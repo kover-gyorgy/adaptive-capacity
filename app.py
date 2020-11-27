@@ -687,20 +687,173 @@ def model_plot1(pTimes,pSol):
     return figure
 
 def model_plot2(pTimes,pSol):
-        
-    figure = go.Figure(data=go.Scatter(x=pTimes, y=pSol.y[0,:],mode='lines',line=go.scatter.Line(color="black", dash="dashdot", width=1),showlegend=True, name='BCS1', ))
+    ymin =pSol.y[6,:].min()
+    ymax =pSol.y[6,:].max()
+    ymax =max(ymax,pSol.y[0,:].max())
+    ymax =max(ymax,pSol.y[1,:].max())
+    ymax =max(ymax,pSol.y[2,:].max())
+    ymin =min(ymin,pSol.y[0,:].min())
+    ymin =min(ymin,pSol.y[1,:].min())
+    ymin =min(ymin,pSol.y[2,:].min())
+    figure = go.Figure(data=go.Scatter(x=pTimes, y=pSol.y[6,:],mode='lines',line=go.scatter.Line(color="black"),showlegend=True, name='BCS', ))
+    figure.add_trace(go.Scatter(x=pTimes, y=pSol.y[0,:],mode='lines',line=go.scatter.Line(color="black", dash="dashdot", width=1),showlegend=True, name='BCS1'))
     figure.add_trace(go.Scatter(x=pTimes, y=pSol.y[1,:],mode='lines',line=go.scatter.Line(color="red", dash="dashdot", width=1),showlegend=True, name='BCS2'))
     figure.add_trace(go.Scatter(x=pTimes, y=pSol.y[2,:],mode='lines',line=go.scatter.Line(color="green", dash="dashdot", width=1),showlegend=True, name='BCS3'))
+    
+    figure.add_trace(go.Scatter(x=[0], y=[ymax],mode='markers',marker=dict(color="black",size=1),showlegend=False))
+    figure.add_trace(go.Scatter(x=[ggte1], y=[ymin],mode='markers',marker=dict(color="black",size=1),showlegend=False))
+    
     figure.update_layout(xaxis_title="days of age", yaxis_title="BCS")
     figure.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
     figure.update_xaxes(range=[-50, 1100])
-    #figure.update_yaxes(range=[2, 4])
+    #figure.update_yaxes(range=[1.8, 3.2])
     figure.update_layout(
         width=600,
         height=550,
         #height=510,
         margin=dict(t=50,  )#r=0, b=0, t=0, pad=0 )
-        )      
+        )  
+    if not math.isnan(ggtb1):
+        figure.add_annotation(dict(
+            x=ggtb1, 
+            y=2, 
+            xref="x",
+            yref="y",
+            showarrow=False,
+            text="$ t_{b}^{1} $",
+            font=dict(size=16,color="blue")
+            ))  
+        figure.add_shape(
+                # Line Vertical
+                dict(
+                    type="line",
+                    x0=ggtb1,
+                    y0=ymin,
+                    x1=ggtb1,
+                    y1=ymax,
+                    line=dict(
+                        color="black",
+                        width=0.25,
+                        dash="dashdot"
+                    )
+        ))
+        figure.add_annotation(dict(
+            x=ggte1, 
+            y=2, 
+            xref="x",
+            yref="y",
+            showarrow=False,
+            text="$ t_{e}^{1} $",
+            font=dict(size=16,color="blue")
+            ))  
+        figure.add_shape(
+                # Line Vertical
+                dict(
+                    type="line",
+                    x0=ggte1,
+                    y0=ymin,
+                    x1=ggte1,
+                    y1=ymax,
+                    line=dict(
+                        color="black",
+                        width=0.25,
+                        dash="dashdot"
+                    )
+        ))
+    if not math.isnan(ggtb2):
+        figure.add_annotation(dict(
+            x=ggtb2, 
+            y=2, 
+            xref="x",
+            yref="y",
+            showarrow=False,
+            text="$ t_{b}^{2} $",
+            font=dict(size=16,color="blue")
+            ))  
+        figure.add_shape(
+                # Line Vertical
+                dict(
+                    type="line",
+                    x0=ggtb2,
+                    y0=ymin,
+                    x1=ggtb2,
+                    y1=ymax,
+                    line=dict(
+                        color="black",
+                        width=0.25,
+                        dash="dashdot"
+                    )
+        ))
+        figure.add_annotation(dict(
+            x=ggte2, 
+            y=2, 
+            xref="x",
+            yref="y",
+            showarrow=False,
+            text="$ t_{e}^{2} $",
+            font=dict(size=16,color="blue")
+            ))  
+        figure.add_shape(
+                # Line Vertical
+                dict(
+                    type="line",
+                    x0=ggte2,
+                    y0=ymin,
+                    x1=ggte2,
+                    y1=ymax,
+                    line=dict(
+                        color="black",
+                        width=0.25,
+                        dash="dashdot"
+                    )
+        ))
+    if not math.isnan(ggtb3):
+        figure.add_annotation(dict(
+            x=ggtb3, 
+            y=2, 
+            xref="x",
+            yref="y",
+            showarrow=False,
+            text="$ t_{b}^{3} $",
+            font=dict(size=16,color="blue")
+            ))  
+        figure.add_shape(
+                # Line Vertical
+                dict(
+                    type="line",
+                    x0=ggtb3,
+                    y0=ymin,
+                    x1=ggtb3,
+                    y1=ymax,
+                    line=dict(
+                        color="black",
+                        width=0.25,
+                        dash="dashdot"
+                    )
+        ))
+        figure.add_annotation(dict(
+            x=ggte3, 
+            y=2, 
+            xref="x",
+            yref="y",
+            showarrow=False,
+            text="$ t_{e}^{3} $",
+            font=dict(size=16,color="blue")
+            )) 
+        figure.add_shape(
+                # Line Vertical
+                dict(
+                    type="line",
+                    x0=ggte3,
+                    y0=ymin,
+                    x1=ggte3,
+                    y1=ymax,
+                    line=dict(
+                        color="black",
+                        width=0.25,
+                        dash="dashdot"
+                    )
+        ))    
     figure.update_xaxes(showline=True, linewidth=2, linecolor='black')
     figure.update_yaxes(showline=True, linewidth=2, linecolor='black')
     figure.update_xaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
@@ -823,7 +976,7 @@ def generate_slider(title, _id, _min, _max, _value, _step, display_value):
                                 value=_value,
                             )
                         ],
-                        style={'display': 'flex', 'align-items': 'center', 'justify-content': 'center', 'height': '100%'}
+                        style={ 'align-items': 'center', 'justify-content': 'center', 'height': '100%'} #'display': 'flex',
                     ),
                     style={'display': 'inline-block', 'width': '65%',  'padding': '6px',  'vertical-align': 'top'} #'line-height': '2vh','height': '150%',
                 ),
@@ -831,7 +984,7 @@ def generate_slider(title, _id, _min, _max, _value, _step, display_value):
                 # slider value
                 html.P(children=[display_value], id=_id + '-value-display', style={'display': 'inline-block', 'width': '15%', }),   #'line-height': '2vh'
                 
-        ], style={'width': '100%', 'height': '28px', 'position': 'relative', 'z-index': 1}
+        ], style={'width': '100%', 'height': '28px'}  #, , 'position': 'relative','z-index': 1
     )
 
 tabs_styles = {
@@ -863,7 +1016,7 @@ app.layout = html.Div([
     html.Div(
         className="pkcalc-banner",
         children=[
-            html.H2("PhenoBR: a model to phenotype body condition’ dynamics in ruminants"),
+            html.H2("PhenoBR: a model to phenotype body condition’ dynamics in meat sheep"),
         ], style={'margin-bottom': '20px'} 
     ),
           
@@ -884,18 +1037,32 @@ app.layout = html.Div([
                             html.P(children=[
                                     html.Strong('What is PhenoBR:')]),
                             html.P(children=[
-                                   'PhenoBR is a software to support phenotyping of ruminant robustness when facing frequent negative '
-                                   ' energy balances throughout their reproductive cycles. This information is of main concern in the'
-                                   ' context of genetic selection for robustness and resilience. Body reserves (BR) are the main sources of energy in'
-                                   ' ruminants facing negative energy balance challenges e.g. during highly demanding reproductive'
-                                   ' cycles or feed scarcity periods. PhenoBR is based on a dynamic model describing the variations'
-                                   ' of Body condition score as the indicator of the body reserves in ruminants.'])
-                           ], style={'background-color': 'lightblue','padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
+                                    'PhenoBR is a software to support individual phenotyping of body condition dynamics in ruminants when facing alternation of positive and negative energy balances (NEB) throughout their productive cycles. This information is of main concern in the context of genetic selection for robustness and resilience. Body lipid reserves (BR) are the main sources of energy in ruminants facing NEB challenges during physiological stages with high energy requirements e.g. late pregnancy or suckling or during extreme feed scarcity periods e.g. long and strong dry seasons. PhenoBR is based on a dynamic model describing the variations of Body condition score (BCS) as a relevant indicator of the BR status in ruminants. PhenoBR provides individual biological characteristics of BR mobilisation and accretion processes.'
+                                   #'PhenoBR is a software to support phenotyping of ruminant robustness when facing frequent negative '
+                                   #' energy balances throughout their reproductive cycles. This information is of main concern in the'
+                                   #' context of genetic selection for robustness and resilience. Body reserves (BR) are the main sources of energy in'
+                                   #' ruminants facing negative energy balance challenges e.g. during highly demanding reproductive'
+                                   #' cycles or feed scarcity periods. PhenoBR is based on a dynamic model describing the variations'
+                                   #' of Body condition score as the indicator of the body reserves in ruminants.'
+                                   ])
+                           ], style={'padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'margin-top': '25px', 'text-align': 'justify'} 
                             ),
+                                html.Div(
+                                 [ 
+                                  html.P(children=[
+                                       html.Strong('Regulations of the model for one productive cycle:')]),
+                                  html.P(children=[
+                                              'Flux to BCS is regulated by the difference between \(BCS_i\)  and the \(BCS_m\). '
+                                              'The flux to \(p_i\)  is activated in the interval  \([t_b^i,t_e^i ]\) and will stop when it reaches \(p_m\).  '
+                                              'From the beginning of the perturbation, the decrease of BCS_i is counterbalanced by all internal physiological mechanisms of the ewes looking to keep the \(BCS_i\) close to \(BCS_m\).'
+                                            ])
+                                 # ], style={'width': '500px','padding': '4px','border-width': 'thin','border-style':'solid','margin-top': '20px', 'margin-left': 'auto', 'margin-right': 'auto', 'text-align': 'justify'}
+                                   ], style={'padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
+                                  ), 
                             html.P(children=[html.Strong('Authors:'),
                                              ' Masoomeh Taghipoor, György Kövér, Dominique Hazard, Eliel González-García, Tiphaine Macé'
-                                            ], style={'background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid'}),
-                            ],     style={'width': '50%','height': '50px','vertical-align': 'middle',
+                                            ], style={'padding': '2px','border-width': 'thin','border-style':'solid'}),
+                            ],     style={'width': '50%','height': '50px','vertical-align': 'top',
                                         'display': 'table-cell',
                                         'margin': '0px',
                                         'padding': '0px',
@@ -903,14 +1070,6 @@ app.layout = html.Div([
                                         }),
                        html.Div([
                                   html.Img(src=app.get_asset_url('img4.png'), style={'display': 'block', 'margin-left': 'auto', 'margin-right': 'auto'}),
-                                  html.P(children=[
-                                             'The scheme represent the regulations of the model for one productive cycle. '
-                                             'Flux to BCS is regulated by the difference between \(BCS_i\)  and the \(BCS_m\). '
-                                             'The flux to  \(p_i\)  is activated in the interval \([t_b^i,t_e^i ]\)  and will stop '
-                                             'when it reaches \(p_m\).  From the beginning of the perturbation, the decrease of \(BCS_i\) '
-                                             'is counterbalanced by all internal physiological mechanisms of the ewes looking to '
-                                             'keep the \(BCS_i\) close to \(BCS_m\).'
-                                            ], style={'width': '500px','background-color': 'lightblue','padding': '2px','border-width': 'thin','border-style':'solid','margin-left': 'auto', 'margin-right': 'auto', 'text-align': 'justify'}), 
                                        html.Div(
                                                 id="download-areaDataset",
                                                 className="section",
@@ -924,13 +1083,13 @@ app.layout = html.Div([
                                                                 type="submit",
                                                                 title ="Download the raw dataset as a zip file",
                                                                 children=[
-                                                                    "download"
+                                                                    "Download Dataset"
                                                                 ],style={'display': 'inline-block','border': '2px solid rgb(2, 21, 70)'}
                                                             )
                                                         ]
                                                     )
                                                   
-                                                ],style={'display': 'block','margin-top': '20px','margin-left': '200px','margin-right': 'auto'}
+                                                ],style={'display': 'block','margin-top': '30px','margin-left': '330px','margin-right': 'auto'}
                                             ),
                                 ],
                                  style={#'width': '65%',
@@ -945,116 +1104,109 @@ app.layout = html.Div([
                     value='what-is2',
                     style=tab_style, selected_style=tab_selected_style,
                     children=html.Div(className='control-tab', children=[
-                      html.P(children='Characteristics of a selected group of animals  -  Correlation analysis', 
-                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'20px','vertical-align': 'middle',
-                                                      'border-width': 'thin','border-style':'solid','text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
-                      html.Div([
-                          html.Div(
-                               [
-                                    html.Div( 
-                                        children=[  
-                                                    dcc.Graph(id='ModelPlot1',
-                                                                figure=model_plot1(ttTT,ssSS),
-                                                                config={
-                                                                   'displayModeBar': False},
-                                                                style={'margin': '0px','margin-top': '7px','margin-right': '7px',
-                                                                       'padding': '0px'}
-                                                                ),             
-                                                        ],
-                                                    style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}),          
-                               ],
-                                     style={'width': '33%',
-                                            'display': 'inline-block', 'margin-left': 'auto', 'margin-right': 'auto',
-                                            'padding': '0', 
-                                            'vertical-align': 'top'
-                                            }),
-                          html.Div(
-                               [
-                                    html.Div( 
-                                        children=[  
+                         html.Div(  # title
+                           [ 
+                               html.P(children='Play with model parameters', 
+                                               style={'margin-top':'7px','margin-bottom':'5px','vertical-align': 'middle',
+                                                     'text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
+                           ],
+                                               style={'margin-top':'7px','margin-bottom':'20px','border-width': 'thin','border-style':'solid'}  ),
+                         html.Div([ # figure & sliders
+                             html.Div([ #figure
+                               
+                                        html.Div( 
+                                        children=[
+                                                    html.Div(
+                                                        id="legend-info",
+                                                        children='Click the legend to turn graphs on/off' ,style={'text-align': 'right',
+                                                                                                'font-size': '10px',
+                                                                                                'margin-right': '90px',
+                                                                                                'margin-bottom': '-15px',
+                                                                                                'z-index': '9',
+                                                                                                'position': 'relative'}
+                                                    ),
                                                     dcc.Graph(id='ModelPlot2',
                                                                 figure=model_plot2(ttTT,ssSS),
                                                                 config={
                                                                    'displayModeBar': False},
-                                                                style={'margin': '0px','margin-top': '7px','margin-right': '7px',
-                                                                       'padding': '0px'}
+                                                                style={'margin': '0px 7px 0px 0px',
+                                                                       'padding': '0px',
+                                                                       'z-index': '1',
+                                                                       'position': 'relative'}
                                                                 ),  
-                                                        ],
-                                                    style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}), 
-                               ],   
-                                     style={'width': '33%',
-                                            'display': 'inline-block',
-                                            'padding': '0',
-                                            'vertical-align': 'middle','margin': 'auto','text-align': 'center'
-                                            }),
-                          html.Div([
-                                        html.Div(
-                                                children=[dcc.Checklist(id='Checklist_Parity',
-                                                                options=[
-                                                                    {'label': 'Parity #1', 'value': 'P1'},
-                                                                    {'label': 'Parity #2', 'value': 'P2'},
-                                                                    {'label': 'Parity #3', 'value': 'P3'}
-                                                                ],
-                                                                value=['P1', 'P2', 'P3'],
-                                                                labelStyle={'display': 'inline-block', 'margin-top': '0px', 'margin-left': '2vh', 'margin-right': 'auto',  'z-index': '1'}
-                                                            )
-                                                        ],
-                                                style={'width': '90%','margin-bottom': '2vh','margin-left': '10vh','margin-top': '20px',  'z-index': '1'}
-                                                ),
+                                                 ], style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}), 
+                                       ], style={   'min-width': '500px',
+                                                    'width': '33%',
+                                                    'display': 'inline-block',
+                                                    'padding': '0',
+                                                    'vertical-align': 'middle','margin': 'auto','text-align': 'center',
+                                                    'margin-right': '50px',
+                                                    }),
+                             html.Div([ # checkboxes & sliders
+                                       
                                         
-                                        generate_slider("\(k_{b}^{1}\)", "sliderKb1", gkb1_min*1000, gkb1_max*1000, gkb1*1000, 0.01, gkb1*1000),
-                                        generate_slider("\(k_{b}^{2}\)", "sliderKb2", gkb2_min*1000, gkb2_max*1000, gkb2*1000, 0.01, gkb2*1000),
-                                        generate_slider("\(k_{b}^{3}\)", "sliderKb3", gkb3_min*1000, gkb3_max*1000, gkb3*1000, 0.01, gkb3*1000),
-                                        generate_slider("\(k_{p}^{1}\)", "sliderKp1", gkp1_min*1000, gkp1_max*1000, gkp1*1000, 0.01, gkp1*1000),
-                                        generate_slider("\(k_{p}^{2}\)", "sliderKp2", gkp2_min*1000, gkp2_max*1000, gkp2*1000, 0.01, gkp2*1000),
-                                        generate_slider("\(k_{p}^{3}\)", "sliderKp3", gkp3_min*1000, gkp3_max*1000, gkp3*1000, 0.01, gkp3*1000),
-                                        generate_slider("\(t_{b}^{1}\)", "sliderTb1", ggtb1_min, ggtb1_max, ggtb1, 1, ggtb1),
-                                        generate_slider("\(t_{b}^{2}\)", "sliderTb2", ggtb2_min, ggtb2_max, ggtb2, 1, ggtb2),
-                                        generate_slider("\(t_{b}^{3}\)", "sliderTb3", ggtb3_min, ggtb3_max, ggtb3, 1, ggtb3),
-                                        generate_slider("\(\Delta T^1\)", "sliderTe1",ggte1_min, ggte1_max, ggte1, 1, ggte1-ggtb1),
-                                        generate_slider("\(\Delta T^2\)", "sliderTe2",ggte2_min, ggte2_max, ggte2, 1, ggte2-ggtb2),
-                                        generate_slider("\(\Delta T^3\)", "sliderTe3",ggte3_min, ggte3_max, ggte3, 1, ggte3-ggtb3),
-                                        
-                                        generate_slider("\(BCS_{1}\)", "sliderBCS1", 2, 3.5, 3.0, 0.01, 3.0),
-                                        generate_slider("\(BCS_{2}\)", "sliderBCS2", 2, 3.5, 2.5, 0.01, 2.5),
-                                        generate_slider("\(BCS_{3}\)", "sliderBCS3", 2, 3.5, 2.5, 0.01, 2.6),
-                                        #generate_slider("\(BCS\)",     "sliderBCS",  2, 3.5, 3.0, 0.01, 3.0),
-                                        
-                                        
-                                        
-#                                       html.Div(
-#                                                id="Reset-areaDataset",
-#                                                className="section",
-#                                                children=[
-#                                                            html.A(html.Button(
-#                                                                className="button",
-#                                                                id="reset-button",
-#                                                                title ="Reset the controls to their default values",
-#                                                                children=[
-#                                                                    "RESET"
-#                                                                ],style={'display': 'inline-block','margin-top':'30px','margin-left':'150px', 'border': '2px solid rgb(2, 21, 70)'}
-#                                                            ),href='/',)
-#                                                        ]
-#                                            ),
-                                        
-                                        
-                                  ],   
-                                         style={'width': '33%',
+                                        html.Div( # sliders
+                                            [
+                                                html.Div( # checkboxes
+                                                    children=[dcc.Checklist(id='Checklist_Parity',
+                                                                    options=[
+                                                                        {'label': 'Parity #1', 'value': 'P1'},
+                                                                        {'label': 'Parity #2', 'value': 'P2'},
+                                                                        {'label': 'Parity #3', 'value': 'P3'}
+                                                                    ],
+                                                                    value=['P1', 'P2', 'P3'],
+                                                                    labelStyle={'display': 'inline-block', 'margin-top': '0px', 'margin-left': '2vh', 'margin-right': 'auto',  'z-index': '1'}
+                                                                )
+                                                            ],
+                                                    style={'width': '90%','margin-bottom': '2vh','margin-left': '2vh','margin-top': '20px', 'text-align': 'right'} #,  'z-index': '1'
+                                                ), 
+                                                generate_slider("\(k_{b}^{1}\)", "sliderKb1", gkb1_min*1000, gkb1_max*1000, gkb1*1000, 0.01, gkb1*1000),
+                                                generate_slider("\(k_{b}^{2}\)", "sliderKb2", gkb2_min*1000, gkb2_max*1000, gkb2*1000, 0.01, gkb2*1000),
+                                                generate_slider("\(k_{b}^{3}\)", "sliderKb3", gkb3_min*1000, gkb3_max*1000, gkb3*1000, 0.01, gkb3*1000),
+                                                generate_slider("\(k_{p}^{1}\)", "sliderKp1", gkp1_min*1000, gkp1_max*1000, gkp1*1000, 0.01, gkp1*1000),
+                                                generate_slider("\(k_{p}^{2}\)", "sliderKp2", gkp2_min*1000, gkp2_max*1000, gkp2*1000, 0.01, gkp2*1000),
+                                                generate_slider("\(k_{p}^{3}\)", "sliderKp3", gkp3_min*1000, gkp3_max*1000, gkp3*1000, 0.01, gkp3*1000),
+                                                generate_slider("\(t_{b}^{1}\)", "sliderTb1", ggtb1_min, ggtb1_max, ggtb1, 1, ggtb1),
+                                                generate_slider("\(t_{b}^{2}\)", "sliderTb2", ggtb2_min, ggtb2_max, ggtb2, 1, ggtb2),
+                                                generate_slider("\(t_{b}^{3}\)", "sliderTb3", ggtb3_min, ggtb3_max, ggtb3, 1, ggtb3),
+                                                generate_slider("\(\Delta T^1\)", "sliderTe1",ggte1_min, ggte1_max, ggte1, 1, ggte1-ggtb1),
+                                                generate_slider("\(\Delta T^2\)", "sliderTe2",ggte2_min, ggte2_max, ggte2, 1, ggte2-ggtb2),
+                                                generate_slider("\(\Delta T^3\)", "sliderTe3",ggte3_min, ggte3_max, ggte3, 1, ggte3-ggtb3),
+                                                
+                                                generate_slider("\(BCS_{1}\)", "sliderBCS1", 2, 3.5, 3.0, 0.01, 3.0),
+                                                generate_slider("\(BCS_{2}\)", "sliderBCS2", 2, 3.5, 2.5, 0.01, 2.5),
+                                                generate_slider("\(BCS_{3}\)", "sliderBCS3", 2, 3.5, 2.5, 0.01, 2.6),
+                                            ],
+                                                style={'width': '90%','margin-bottom': '2vh','margin-left': '0vh','margin-top': '0px'}  # ,  'z-index': '1' 
+                                        )
+                                         
+                                      ],   
+                                         style={'min-width': '500px',
+                                                'width': '33%',
                                                 'display': 'inline-block',
                                                 'padding': '0',
-                                                'vertical-align': 'top','margin': 'auto','text-align': 'center'
+                                                'vertical-align': 'top','margin': 'auto','text-align': 'center', 
+                                                'margin-top': '0',
+                                                'position': 'relative',
+                                                'z-index': '2'
                                                 })
-                          ]), 
+                          ],style={'display': 'flex'}), 
                         ])
                 ), 
-                dcc.Tab(
-                    label='Individual response',
+                dcc.Tab( label='Individual response',
                     value='what-is3',style=tab_style, 
                     selected_style=tab_selected_style,
                     children=html.Div(className='control-tab', children=[
-                      html.P(children='Characterize the response of one animal to NEB challenge during one or several productive cycle', 
-                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'20px','vertical-align': 'middle',
-                                                      'border-width': 'thin','border-style':'solid','text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
+                         html.Div(
+                           [ 
+                               html.P(children='Characterize the response of one animal to NEB challenge during one or several productive cycle', 
+                                               style={'margin-top':'7px','margin-bottom':'5px','vertical-align': 'middle',
+                                                     'text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
+                               html.P(children='In this part you select an animal based on the number of parities, to see how its response in term of the variation of $BCS$ is summerized with four parameters per parity ( $k_b$, $k_p$, $t_b$, $\Delta T$ ). ', 
+                                               style={ 'text-align':'center'}),
+                                          
+                           ],
+                                               style={'margin-top':'7px','margin-bottom':'20px','border-width': 'thin','border-style':'solid'}  ),           
                       html.Div(
                            [
 #############                             
@@ -1124,11 +1276,8 @@ app.layout = html.Div([
                       html.Div(
                            [
 #############                           
-                                        html.P(children='In this part you select an animal based on the number of parities, to see how its response in term of the variation of is summerized with 4 parameters per parity ( $k_b$, $k_p$, $t_b$, $\Delta T$ ). ', 
-                                               style={'background-color': 'lightblue','display': 'inline-block','margin-top':'45px','margin-left': 'auto', 'margin-right': 'auto','padding': '2px','border-width': 'thin','border-style':'solid'}),
-                                          
                                         html.P(children='Intensities of reserves’ mobilization and recovery', 
-                                               style={'background-color': 'lightblue','display': 'inline-block','margin-top':'15px','margin-left': 'auto', 'margin-right': 'auto','padding': '2px','border-width': 'thin','border-style':'solid'}),
+                                               style={'display': 'inline-block','margin-top':'15px','margin-left': 'auto', 'margin-right': 'auto','margin-top': '80px' ,'padding': '2px'}),
                                         html.Div(
                                                 [
                                                     dash_table.DataTable(
@@ -1145,7 +1294,7 @@ app.layout = html.Div([
                                                 ],
                                                 ),
                                         html.P(children='Time related parameters', 
-                                               style={'background-color': 'lightblue','display': 'inline-block','margin-top':'15px','vertical-align': 'middle','padding': '2px','border-width': 'thin','border-style':'solid'}),
+                                               style={'display': 'inline-block','margin-top':'15px','vertical-align': 'middle','padding': '2px', 'margin-top': '30px' }),
                                         html.Div(
                                                 [
                                                     dash_table.DataTable(
@@ -1166,7 +1315,7 @@ app.layout = html.Div([
                                                 className="section",
                                                 children=[
                                                  
-                                                ]
+                                                ],style={'margin-left': '20px','margin-top': '30px'}
                                             )
                            ],   
                                  style={'width': '30%',
@@ -1176,13 +1325,18 @@ app.layout = html.Div([
                                         }),       
                         ])
                 ), 
-                dcc.Tab(
-                    label='Group analysis',
+                dcc.Tab( label='Group analysis',
                     value='what-is4',style=tab_style, 
                     selected_style=tab_selected_style,
-                    children=html.Div(className='control-tab', children=[ html.P(children='Characteristics of a selected group of animals  -  Descriptive analysis', 
-                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'20px','vertical-align': 'middle',
-                                                      'border-width': 'thin','border-style':'solid','text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
+                    children=html.Div(className='control-tab', children=[ 
+                         html.Div(
+                           [ 
+                               html.P(children='Characteristics of a selected group of animals  -  Descriptive analysis', 
+                                               style={'margin-top':'7px','margin-bottom':'5px','vertical-align': 'middle',
+                                                     'text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
+                                          
+                           ],
+                                               style={'margin-top':'7px','margin-bottom':'20px','border-width': 'thin','border-style':'solid'}  ),
                       html.Div(
                            [
 #############                             
@@ -1297,7 +1451,7 @@ app.layout = html.Div([
                                                 className="section",
                                                 children=[
                                                 
-                                                ],style={'display': 'inline-block','vertical-align': 'middle','margin-top': '10px','margin-left': '200px'}    #,'float': 'right'
+                                                ],style={'display': 'inline-block','vertical-align': 'middle','margin-top': '10px','margin-left': '665px'}    #,'float': 'right'
                                             ),
                                     
                                     
@@ -1310,14 +1464,17 @@ app.layout = html.Div([
                       
                         ])
                 ),
-                dcc.Tab(
-                    label='Correlation analysis',
+                dcc.Tab( label='Correlation analysis',
                     value='what-is5',style=tab_style, 
                     selected_style=tab_selected_style,
                     children=html.Div(className='control-tab', children=[
-                      html.P(children='Characteristics of a selected group of animals  -  Correlation analysis', 
-                                               style={'background-color': 'lightblue','margin-top':'7px','margin-bottom':'20px','vertical-align': 'middle',
-                                                      'border-width': 'thin','border-style':'solid','text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
+                         html.Div(
+                           [ 
+                               html.P(children='Characteristics of a selected group of animals  -  Correlation analysis', 
+                                               style={'margin-top':'7px','margin-bottom':'5px','vertical-align': 'middle',
+                                                     'text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
+                           ],
+                                               style={'margin-top':'7px','margin-bottom':'20px','border-width': 'thin','border-style':'solid'}  ),
                       html.Div(
                            [
 #############                             
@@ -1441,7 +1598,7 @@ app.layout = html.Div([
                                                 className="section",
                                                 children=[
                                                   
-                                                ],style={'display': 'block','margin-top': '10px','margin-left': 'auto','margin-right': 'auto'}
+                                                ],style={'display': 'block','margin-top': '10px','margin-left': '320px','margin-right': 'auto'}
                                             ),          
                                                     ],
                                                 style={ 'display': 'inline-block', 'margin': '0px','margin-right': '7px','padding': '0px'}), 
@@ -1453,6 +1610,104 @@ app.layout = html.Div([
                                         }),       
                         ])
                 ),
+                dcc.Tab( label='Glossary',
+                    value='gloss',
+                    style=tab_style, 
+                    selected_style=tab_selected_style,
+                    children=html.Div(className='control-tabBB', children=[
+                            
+                      html.Div(
+                           [
+                            
+                           
+                         html.Div(
+                           [ 
+                            html.P(children=[
+                                    html.Strong('Abbreviations:')], style={'margin-bottom': '20px'}),
+                            html.P(children=[
+                                    '\(BR\): Body lipid or energy reserves'
+                                   ]),
+                            html.P(children=[
+                                    '\(BCS\): Body condition score (measured in sheep according to an adapted grid from the initially grid proposed by Russel et al., 1969)'
+                                   ]),
+                            html.P(children=[
+                                    '\(NEB\): Negative Energy Balance'
+                                   ]),
+                            html.P(children=[
+                                    '\(BCS_i\): Body condition score in parity \(i\)'
+                                   ]),
+                            html.P(children=[
+                                    '\(P_i\): Perturbation during parity \(i\)'
+                                   ]),
+                            html.P(children=[
+                                    '\(BCS_m\): Expected value of BCS in the absence of all perturbing factors '
+                                   ]),
+                            html.P(children=[
+                                    '\(P_m\): Maximum decrease due to the pregnancy and suckling period'
+                                   ]),
+                            html.P(children=[
+                                    '\(t_b\): Beginning of the perturbation'
+                                   ]),
+                            html.P(children=[
+                                    '\(t_b^i\): Beginning of the perturbation in the productive cycle \(i\)'
+                                   ]),
+                            html.P(children=[
+                                    '\(t_e^i\): End of the perturbation in the productive cycle \(i\)'
+                                   ]),
+                            html.P(children=[
+                                    #' $$\Delta T^1$$ : Length of BR mobilization period during the perturbation of productive cycle i'
+                                    ' \(\Delta T^i\) : Length of BR mobilization period during the perturbation of productive cycle \(i\)'
+                                   ]),
+                            html.P(children=[
+                                    '\(k_b^i\): Rate of BCS accretion during the perturbation of productive cycle \(i\)'
+                                   ]),
+                            html.P(children=[
+                                    '\(k_p^i\): Rate of BCS mobilization during the perturbation of productive cycle \(i\)'
+                                   ]),
+                            html.P(children=[
+                                    '\(RSE\): Residual Standard Error'
+                                   ]),
+                           #], style={'background-color': 'lightblue','padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
+                           ], style={'height': '100%', 'padding': '10px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
+                            ),
+                            ],     style={'width': '50%','height': '50px','vertical-align': 'top',
+                                        'display': 'table-cell',
+                                        'margin': '20px',
+                                        'padding': '20px',
+                                     #   'background-color': 'lightblue'
+                                        }),
+                       html.Div([
+                                html.Div(
+                                 [ 
+                                  html.P(children=[
+                                       html.Strong('Definitions:')], style={'margin-bottom': '20px'}),
+                            dcc.Markdown('''
+                                    _**Body reserves mobilization:**_ When the individual animal requires to cover energy requirements, the stored body lipid reserves are mobilized throughout successive and encompassed catabolic processes.
+                                   '''),
+                            dcc.Markdown('''
+                                    _**Body reserves accretion:**_ When the individual animal is well-fed, ingesting more nutrients and energy than required, the restoration of body lipid reserves stocks start, with successive and encompassed anabolic processes.
+                                   '''),
+                            dcc.Markdown('''
+                                    _**Negative energy balance:**_ When the daily energy requirement of a given animal is not met by the energy ingested during the day, resulting from the offered diet (indoor systems) or the harvested, grazed biomass (outdoor, grazing systems). Under normal feeding situations, a physiological NEB occurs in late pregnancy (around before parturition) as the dry matter intake capacity will decline due to foetus growth, related high nutrient requirements and reduced rumen capacity. Under feed scarcity, inconsistent underfeeding situations, NEB occurs due to feed and nutrient scarcity. Monitoring the BCS in a correct manner, may allow an adequate monitoring (by indirect estimation) of the individual energy balance status.
+                                   '''),
+                            dcc.Markdown('''
+                                    _**Perturbation:**_ In our context, the perturbation was defined as the period associated with BR mobilization due to NEB and based on the BCS decrease (Macé et al., 2018).
+                                   '''),
+                            dcc.Markdown('''
+                                    _**A reproductive cycle of the female:**_ Interval between two consecutive mating.
+                                   '''),
+                           ], style={'height': '100%', 'padding': '10px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
+                            ),
+                            ],     style={'width': '50%','height': '50px','vertical-align': 'top',
+                                        'display': 'table-cell',
+                                        'margin': '20px',
+                                        'padding': '20px',
+                                     #   'background-color': 'lightblue'
+                                        }),
+                            
+
+                        ])
+                ), 
                 
              ], style=tabs_styles,
             colors={
@@ -1479,7 +1734,7 @@ def build_download_buttonBCS(uri):
                                                                 type="submit",
                                                                 title ="Download the parameters, the measured and simulated BCS data as a zip file",
                                                                 children=[
-                                                                    "download"
+                                                                    "Download Parameters"
                                                                 ],style={'border': '2px solid rgb(2, 21, 70)'}
                                                             )
                                                         ],style={'margin-top': '15px'}
@@ -1497,7 +1752,7 @@ def build_download_buttonDescr(uri):
                                                                 type="submit",
                                                                 title ="Download the parameters of the selected parity group and the descriptive statistics as a zip file",
                                                                 children=[
-                                                                    "download"
+                                                                    "Download Descriptives"
                                                                 ],style={'display': 'inline-block','border': '2px solid rgb(2, 21, 70)'}
                                                             )
                                                         ]
@@ -1516,7 +1771,7 @@ def build_download_button(uri):
                                                                 type="submit",
                                                                 title ="Download the parameters of the selected parity group and the correlation coefficients as a zip file",
                                                                 children=[
-                                                                    "download"
+                                                                    "Download Correlations"
                                                                 ],style={'display': 'inline-block','border': '2px solid rgb(2, 21, 70)'}
                                                             )
                                                         ]
@@ -1538,7 +1793,7 @@ def build_download_button(uri):
 
 @app.callback(  
     [    
-    dash.dependencies.Output('ModelPlot1', 'figure'),
+    #dash.dependencies.Output('ModelPlot1', 'figure'),
     dash.dependencies.Output('ModelPlot2', 'figure'),
     dash.dependencies.Output('sliderKb1-value-display', component_property='children'),
     dash.dependencies.Output('sliderKb2-value-display', component_property='children'),
@@ -1632,7 +1887,7 @@ def update_model_plot12(pPList,pkb1,pkb2,pkb3,pkp1,pkp2,pkp3,ptb1,ptb2,ptb3,pte1
     figure1=model_plot1(ttTT,ssSS)
     figure2=model_plot2(ttTT,ssSS)                                                                                                                                                                                  #te1.min+max tb2.min+max                    te2.mi+max      tb3.min+max               te3.min
     #return figure1, figure2, round(gkb1*1000,3),round(gkb2*1000,3),round(gkb3*1000,3),round(gkp1*1000,3),round(gkp2*1000,3),round(gkp3*1000,3),ptb1,ptb2,ptb3,pte1-ptb1,pte2-ptb2,pte3-ptb3,pBCS1,pBCS2,pBCS3,pBCS, ptb1,  ptb2, max(260,pte1),min(580,pte2), ptb2,  ptb3, max(600,pte2),min(959,pte3), ptb3,   
-    return figure1, figure2, round(gkb1*1000,3),round(gkb2*1000,3),round(gkb3*1000,3),round(gkp1*1000,3),round(gkp2*1000,3),round(gkp3*1000,3),ptb1,ptb2,ptb3,pte1-ptb1,pte2-ptb2,pte3-ptb3,pBCS1,pBCS2,pBCS3, ptb1,  ptb2, max(260,pte1),min(580,pte2), ptb2,  ptb3, max(600,pte2),min(959,pte3), ptb3,   
+    return figure2, round(gkb1*1000,3),round(gkb2*1000,3),round(gkb3*1000,3),round(gkp1*1000,3),round(gkp2*1000,3),round(gkp3*1000,3),ptb1,ptb2,ptb3,pte1-ptb1,pte2-ptb2,pte3-ptb3,pBCS1,pBCS2,pBCS3, ptb1,  ptb2, max(260,pte1),min(580,pte2), ptb2,  ptb3, max(600,pte2),min(959,pte3), ptb3,   
 
 @app.callback(
     [    
@@ -1818,4 +2073,4 @@ def serve_static(path):
 
 
 if __name__ == '__main__':
-    app.run_server(debug=False)
+    app.run_server(debug=True)
