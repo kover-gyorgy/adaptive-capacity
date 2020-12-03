@@ -704,7 +704,7 @@ def model_plot2(pTimes,pSol):
     figure.add_trace(go.Scatter(x=[ggte1], y=[ymin],mode='markers',marker=dict(color="black",size=1),showlegend=False))
     
     figure.update_layout(xaxis_title="days of age", yaxis_title="BCS")
-    figure.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1))
+    figure.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1,font=dict(size=14)))
     figure.update_xaxes(range=[-50, 1100])
     #figure.update_yaxes(range=[1.8, 3.2])
     figure.update_layout(
@@ -1016,7 +1016,7 @@ app.layout = html.Div([
     html.Div(
         className="pkcalc-banner",
         children=[
-            html.H2("PhenoBR: a model to phenotype body condition’ dynamics in meat sheep"),
+            html.H2("PhenoBR: a model to phenotype body condition dynamics in meat sheep"),
         ], style={'margin-bottom': '20px'} 
     ),
           
@@ -1035,7 +1035,7 @@ app.layout = html.Div([
                          html.Div(
                            [ 
                             html.P(children=[
-                                    html.Strong('What is PhenoBR:')]),
+                                    html.Strong('What is PhenoBR:')], style={ 'font-size': '13pt'}),
                             html.P(children=[
                                     'PhenoBR is a software to support individual phenotyping of body condition dynamics in ruminants when facing alternation of positive and negative energy balances (NEB) throughout their productive cycles. This information is of main concern in the context of genetic selection for robustness and resilience. Body lipid reserves (BR) are the main sources of energy in ruminants facing NEB challenges during physiological stages with high energy requirements e.g. late pregnancy or suckling or during extreme feed scarcity periods e.g. long and strong dry seasons. PhenoBR is based on a dynamic model describing the variations of Body condition score (BCS) as a relevant indicator of the BR status in ruminants. PhenoBR provides individual biological characteristics of BR mobilisation and accretion processes.'
                                    #'PhenoBR is a software to support phenotyping of ruminant robustness when facing frequent negative '
@@ -1044,24 +1044,28 @@ app.layout = html.Div([
                                    #' ruminants facing negative energy balance challenges e.g. during highly demanding reproductive'
                                    #' cycles or feed scarcity periods. PhenoBR is based on a dynamic model describing the variations'
                                    #' of Body condition score as the indicator of the body reserves in ruminants.'
-                                   ])
+                                   ], style={ 'font-size': '13pt'})
                            ], style={'padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'margin-top': '25px', 'text-align': 'justify'} 
                             ),
                                 html.Div(
                                  [ 
                                   html.P(children=[
-                                       html.Strong('Regulations of the model for one productive cycle:')]),
+                                       html.Strong('Regulations of the model for one productive cycle:')], style={ 'font-size': '13pt'}),
                                   html.P(children=[
                                               'Flux to BCS is regulated by the difference between \(BCS_i\)  and the \(BCS_m\). '
                                               'The flux to \(p_i\)  is activated in the interval  \([t_b^i,t_e^i ]\) and will stop when it reaches \(p_m\).  '
-                                              'From the beginning of the perturbation, the decrease of BCS_i is counterbalanced by all internal physiological mechanisms of the ewes looking to keep the \(BCS_i\) close to \(BCS_m\).'
-                                            ])
+                                              'From the beginning of the perturbation, the decrease of \(BCS_i\) is counterbalanced by all internal physiological mechanisms of the ewes looking to keep the \(BCS_i\) close to \(BCS_m\).'
+                                            ], style={ 'font-size': '13pt'})
                                  # ], style={'width': '500px','padding': '4px','border-width': 'thin','border-style':'solid','margin-top': '20px', 'margin-left': 'auto', 'margin-right': 'auto', 'text-align': 'justify'}
                                    ], style={'padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
                                   ), 
-                            html.P(children=[html.Strong('Authors:'),
-                                             ' Masoomeh Taghipoor, György Kövér, Dominique Hazard, Eliel González-García, Tiphaine Macé'
-                                            ], style={'padding': '2px','border-width': 'thin','border-style':'solid'}),
+                         html.Div(
+                           [ 
+                            html.P(children=[html.Strong('Authors:')], style={ 'font-size': '13pt'}),
+                            html.P(children=[' Masoomeh Taghipoor, György Kövér, Dominique Hazard, Eliel González-García, Tiphaine Macé'
+                                            ], style={ 'font-size': '13pt'}),
+                                   ], style={'padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
+                                  ), 
                             ],     style={'width': '50%','height': '50px','vertical-align': 'top',
                                         'display': 'table-cell',
                                         'margin': '0px',
@@ -1100,7 +1104,7 @@ app.layout = html.Div([
                         ])
                 ), 
                 dcc.Tab(
-                    label='The PhenoBR model',
+                    label='Model simulations',
                     value='what-is2',
                     style=tab_style, selected_style=tab_selected_style,
                     children=html.Div(className='control-tab', children=[
@@ -1119,7 +1123,7 @@ app.layout = html.Div([
                                                     html.Div(
                                                         id="legend-info",
                                                         children='Click the legend to turn graphs on/off' ,style={'text-align': 'right',
-                                                                                                'font-size': '10px',
+                                                                                                'font-size': '14px',
                                                                                                 'margin-right': '90px',
                                                                                                 'margin-bottom': '-15px',
                                                                                                 'z-index': '9',
@@ -1203,7 +1207,8 @@ app.layout = html.Div([
                                                style={'margin-top':'7px','margin-bottom':'5px','vertical-align': 'middle',
                                                      'text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
                                html.P(children='In this part you select an animal based on the number of parities, to see how its response in term of the variation of $BCS$ is summerized with four parameters per parity ( $k_b$, $k_p$, $t_b$, $\Delta T$ ). ', 
-                                               style={ 'text-align':'center'}),
+                                               style={ 'text-align':'center','font-size': '14pt'}
+                                               ),
                                           
                            ],
                                                style={'margin-top':'7px','margin-bottom':'20px','border-width': 'thin','border-style':'solid'}  ),           
@@ -1230,7 +1235,7 @@ app.layout = html.Div([
                                                     value='G123',
                                                     clearable=False,
                                                     optionHeight = 24,
-                                                    style={'margin': '0px','margin-right': '7px',
+                                                    style={'margin': '0px','margin-right': '43px','margin-left': '38px',
                                                            'padding': '0px'},),
                                             ],
                                             style={'width': '36%',
@@ -1291,7 +1296,7 @@ app.layout = html.Div([
                                                         data=fichierfinal.to_dict('records'),
                                                         style_header=table_header_style,
                                                     )
-                                                ],
+                                                ],style={'margin-right': '20px'}
                                                 ),
                                         html.P(children='Time related parameters', 
                                                style={'display': 'inline-block','margin-top':'15px','vertical-align': 'middle','padding': '2px', 'margin-top': '30px' }),
@@ -1308,7 +1313,7 @@ app.layout = html.Div([
                                                         data=fichierfinal.to_dict('records'),
                                                         style_header=table_header_style,
                                                     )
-                                                ],
+                                                ],style={'margin-right': '20px'}
                                                 ),
                                         html.Div(
                                                 id="download-areaBCS",
@@ -1498,7 +1503,7 @@ app.layout = html.Div([
                                                     value='G123',
                                                     clearable=False,
                                                     optionHeight = 24,
-                                                    style={'margin-left': 'auto','margin-right': 'auto',
+                                                    style={'margin-left': 'auto','margin-right': 'auto','margin-left': '38px',
                                                            'padding': '0px'},),
                                             ],
                                             style={'width': '280px',
@@ -1979,7 +1984,7 @@ def display_table(Ewe):
     dffM['ID'] = int(Ewe)
     header = ['ID','Parity','day','BCS']
     dffM.to_csv(downloadable_BCSData_csv,columns = header,index=False)
-    figure = go.Figure(data=go.Scatter(x=dff.day, y=dff.BCS1, mode='markers',showlegend=False, name='BCS',
+    figure = go.Figure(data=go.Scatter(x=dff.day, y=dff.BCS1, mode='markers',showlegend=True, name='BCS observation',
         marker=dict(
             color='rgba(0, 0, 0, 0.0)',
             size=6,
@@ -2043,12 +2048,14 @@ def display_table(Ewe):
 
     sol = solve_ivp(BCSModel2, [0, timesMax], yinit,t_eval=times, atol = 1e-10, rtol = 1e-10, args=argsB, dense_output=False)
 
-    figure.add_trace(go.Scatter(x=times, y=sol.y[6,:],mode='lines',line=go.scatter.Line(color="blue"),showlegend=False, name='BSpline'))
+    figure.add_trace(go.Scatter(x=times, y=sol.y[6,:],mode='lines',line=go.scatter.Line(color="blue"),showlegend=True, name='simulation by PhenoBR'))
     figure.update_xaxes(showline=True, linewidth=2, linecolor='black')
     figure.update_yaxes(showline=True, linewidth=2, linecolor='black')
     figure.update_xaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
     figure.update_yaxes(showgrid=True, gridwidth=1, gridcolor='LightPink')
-                          
+    figure.update_layout(legend=dict(orientation="h", yanchor="bottom", y=1.02, xanchor="right", x=1, font=dict(size=14)))
+    
+    
     dataset_sim = pd.DataFrame({'day': times, 'BCS_sim': sol.y[6,:]})
     dataset_sim['ID'] = int(Ewe)
     header = ['ID','day','BCS_sim']
