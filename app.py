@@ -1016,7 +1016,9 @@ app.layout = html.Div([
     html.Div(
         className="pkcalc-banner",
         children=[
-            html.H2("PhenoBR: a model to phenotype body condition dynamics in meat sheep"),
+            html.H2(children=["PhenoBR: a model to phenotype body condition dynamics in meat sheep"], style={'text-align': 'center'}),
+                            html.P(children=['Tiphaine Macé, Eliel González-García, György Kövér, Dominique Hazard, Masoomeh Taghipoor'], style={'text-align': 'center', 'font-size': '13pt'}),
+            html.Label(['bioRxiv 2020. doi: ', html.A('https://doi.org/10.1101/2020.12.01.407098', href='https://doi.org/10.1101/2020.12.01.407098')], style={'text-align': 'center', 'font-size': '12pt'}),
         ], style={'margin-bottom': '20px'} 
     ),
           
@@ -1035,7 +1037,7 @@ app.layout = html.Div([
                          html.Div(
                            [ 
                             html.P(children=[
-                                    html.Strong('What is PhenoBR:')], style={ 'font-size': '13pt'}),
+                                    html.Strong('What is PhenoBR:')], style={ 'font-size': '12pt'}),
                             html.P(children=[
                                     'PhenoBR is a software to support individual phenotyping of body condition dynamics in ruminants when facing alternation of positive and negative energy balances (NEB) throughout their productive cycles. This information is of main concern in the context of genetic selection for robustness and resilience. Body lipid reserves (BR) are the main sources of energy in ruminants facing NEB challenges during physiological stages with high energy requirements e.g. late pregnancy or suckling or during extreme feed scarcity periods e.g. long and strong dry seasons. PhenoBR is based on a dynamic model describing the variations of Body condition score (BCS) as a relevant indicator of the BR status in ruminants. PhenoBR provides individual biological characteristics of BR mobilisation and accretion processes.'
                                    #'PhenoBR is a software to support phenotyping of ruminant robustness when facing frequent negative '
@@ -1044,26 +1046,25 @@ app.layout = html.Div([
                                    #' ruminants facing negative energy balance challenges e.g. during highly demanding reproductive'
                                    #' cycles or feed scarcity periods. PhenoBR is based on a dynamic model describing the variations'
                                    #' of Body condition score as the indicator of the body reserves in ruminants.'
-                                   ], style={ 'font-size': '13pt'})
+                                   ], style={ 'font-size': '12pt'})
                            ], style={'padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'margin-top': '25px', 'text-align': 'justify'} 
                             ),
                                 html.Div(
                                  [ 
                                   html.P(children=[
-                                       html.Strong('Regulations of the model for one productive cycle:')], style={ 'font-size': '13pt'}),
+                                       html.Strong('Regulations of the model for one productive cycle:')], style={ 'font-size': '12pt'}),
                                   html.P(children=[
                                               'Flux to BCS is regulated by the difference between \(BCS_i\)  and the \(BCS_m\). '
                                               'The flux to \(p_i\)  is activated in the interval  \([t_b^i,t_e^i ]\) and will stop when it reaches \(p_m\).  '
                                               'From the beginning of the perturbation, the decrease of \(BCS_i\) is counterbalanced by all internal physiological mechanisms of the ewes looking to keep the \(BCS_i\) close to \(BCS_m\).'
-                                            ], style={ 'font-size': '13pt'})
+                                            ], style={ 'font-size': '12pt'})
                                  # ], style={'width': '500px','padding': '4px','border-width': 'thin','border-style':'solid','margin-top': '20px', 'margin-left': 'auto', 'margin-right': 'auto', 'text-align': 'justify'}
                                    ], style={'padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
                                   ), 
                          html.Div(
                            [ 
-                            html.P(children=[html.Strong('Authors:')], style={ 'font-size': '13pt'}),
-                            html.P(children=[' Masoomeh Taghipoor, György Kövér, Dominique Hazard, Eliel González-García, Tiphaine Macé'
-                                            ], style={ 'font-size': '13pt'}),
+                            html.P(children=[html.Strong('Contact:')], style={ 'font-size': '12pt'}),
+                            html.Label([html.A('Masoomeh.Taghipoor@inrae.fr', href='mailto:Masoomeh.Taghipoor@inrae.fr'),' & ',html.A('Gyorgy.kover@szie.hu', href='mailto:Gyorgy.kover@szie.hu')], style={ 'font-size': '12pt'}),
                                    ], style={'padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
                                   ), 
                             ],     style={'width': '50%','height': '50px','vertical-align': 'top',
@@ -1112,7 +1113,7 @@ app.layout = html.Div([
                            [ 
                                html.P(children='Play with model parameters', 
                                                style={'margin-top':'7px','margin-bottom':'5px','vertical-align': 'middle',
-                                                     'text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
+                                                     'text-align':'center','font-size': '13pt','fontWeight': 'bold'}),
                            ],
                                                style={'margin-top':'7px','margin-bottom':'20px','border-width': 'thin','border-style':'solid'}  ),
                          html.Div([ # figure & sliders
@@ -1205,9 +1206,9 @@ app.layout = html.Div([
                            [ 
                                html.P(children='Characterize the response of one animal to NEB challenge during one or several productive cycle', 
                                                style={'margin-top':'7px','margin-bottom':'5px','vertical-align': 'middle',
-                                                     'text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
+                                                     'text-align':'center','font-size': '13pt','fontWeight': 'bold'}),
                                html.P(children='In this part you select an animal based on the number of parities, to see how its response in term of the variation of $BCS$ is summerized with four parameters per parity ( $k_b$, $k_p$, $t_b$, $\Delta T$ ). ', 
-                                               style={ 'text-align':'center','font-size': '14pt'}
+                                               style={ 'text-align':'center','font-size': '12pt'}
                                                ),
                                           
                            ],
@@ -1338,7 +1339,7 @@ app.layout = html.Div([
                            [ 
                                html.P(children='Characteristics of a selected group of animals  -  Descriptive analysis', 
                                                style={'margin-top':'7px','margin-bottom':'5px','vertical-align': 'middle',
-                                                     'text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
+                                                     'text-align':'center','font-size': '13pt','fontWeight': 'bold'}),
                                           
                            ],
                                                style={'margin-top':'7px','margin-bottom':'20px','border-width': 'thin','border-style':'solid'}  ),
@@ -1477,7 +1478,7 @@ app.layout = html.Div([
                            [ 
                                html.P(children='Characteristics of a selected group of animals  -  Correlation analysis', 
                                                style={'margin-top':'7px','margin-bottom':'5px','vertical-align': 'middle',
-                                                     'text-align':'center','font-size': '14pt','fontWeight': 'bold'}),
+                                                     'text-align':'center','font-size': '13pt','fontWeight': 'bold'}),
                            ],
                                                style={'margin-top':'7px','margin-bottom':'20px','border-width': 'thin','border-style':'solid'}  ),
                       html.Div(
@@ -1660,7 +1661,6 @@ app.layout = html.Div([
                                     '\(t_e^i\): End of the perturbation in the productive cycle \(i\)'
                                    ]),
                             html.P(children=[
-                                    #' $$\Delta T^1$$ : Length of BR mobilization period during the perturbation of productive cycle i'
                                     ' \(\Delta T^i\) : Length of BR mobilization period during the perturbation of productive cycle \(i\)'
                                    ]),
                             html.P(children=[
@@ -1672,13 +1672,13 @@ app.layout = html.Div([
                             html.P(children=[
                                     '\(RSE\): Residual Standard Error'
                                    ]),
-                           #], style={'background-color': 'lightblue','padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
-                           ], style={'height': '100%', 'padding': '10px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
+                           ], style={'height': '100%', 'padding': '10px','border-width': 'thin','border-style':'solid', 'margin-bottom': '0px', 'text-align': 'justify'} 
                             ),
-                            ],     style={'width': '50%','height': '50px','vertical-align': 'top',
-                                        'display': 'table-cell',
+                            ],     style={'width': '40%','vertical-align': 'top',
+                                        #'display': 'inline-block',
+                                        'flex': '1',
                                         'margin': '20px',
-                                        'padding': '20px',
+                                        #'padding': '20px',
                                      #   'background-color': 'lightblue'
                                         }),
                        html.Div([
@@ -1701,17 +1701,18 @@ app.layout = html.Div([
                             dcc.Markdown('''
                                     _**A reproductive cycle of the female:**_ Interval between two consecutive mating.
                                    '''),
-                           ], style={'height': '100%', 'padding': '10px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
+                           ], style={'height': '100%', 'padding': '10px','border-width': 'thin','border-style':'solid', 'margin-bottom': '0px', 'text-align': 'justify'} 
                             ),
-                            ],     style={'width': '50%','height': '50px','vertical-align': 'top',
-                                        'display': 'table-cell',
+                            ],     style={'width': '40%','vertical-align': 'top',
+                                        #'display': 'inline-block',
+                                        'flex': '1',
                                         'margin': '20px',
-                                        'padding': '20px',
+                                        #'padding': '20px',
                                      #   'background-color': 'lightblue'
                                         }),
                             
 
-                        ])
+                        ],style={'display': 'flex'} )
                 ), 
                 
              ], style=tabs_styles,
