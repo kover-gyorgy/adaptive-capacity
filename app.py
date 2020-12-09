@@ -1064,7 +1064,7 @@ app.layout = html.Div([
                          html.Div(
                            [ 
                             html.P(children=[html.Strong('Contact:')], style={ 'font-size': '12pt'}),
-                            html.Label([html.A('Masoomeh.Taghipoor@inrae.fr', href='mailto:Masoomeh.Taghipoor@inrae.fr'),' & ',html.A('Gyorgy.kover@szie.hu', href='mailto:Gyorgy.kover@szie.hu')], style={ 'font-size': '12pt'}),
+                            html.Label([html.A('Masoomeh.Taghipoor@inrae.fr', href='mailto:Masoomeh.Taghipoor@inrae.fr'),' & ',html.A('Kover.Gyorgy@szie.hu', href='mailto:Kover.Gyorgy@szie.hu')], style={ 'font-size': '12pt'}),
                                    ], style={'padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
                                   ), 
                             ],     style={'width': '50%','height': '50px','vertical-align': 'top',
