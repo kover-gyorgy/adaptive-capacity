@@ -148,7 +148,7 @@ def descriptives():
             ['Min',paramCorHist.kb1.min()*1000,paramCorHist.kb2.min()*1000,paramCorHist.kb3.min()*1000,paramCorHist.kp1.min()*1000,paramCorHist.kp2.min()*1000,paramCorHist.kp3.min()*1000,paramCorHist.DT1.min(),paramCorHist.DT2.min(),paramCorHist.DT3.min(),paramCorHist.res.min()],
             ['Max',paramCorHist.kb1.max()*1000,paramCorHist.kb2.max()*1000,paramCorHist.kb3.max()*1000,paramCorHist.kp1.max()*1000,paramCorHist.kp2.max()*1000,paramCorHist.kp3.max()*1000,paramCorHist.DT1.max(),paramCorHist.DT2.max(),paramCorHist.DT3.max(),paramCorHist.res.max()],
             ['$1^{st}$ Quartile',paramCorHist.kb1.quantile(0.25)*1000,paramCorHist.kb2.quantile(0.25)*1000,paramCorHist.kb3.quantile(0.25)*1000,paramCorHist.kp1.quantile(0.25)*1000,paramCorHist.kp2.quantile(0.25)*1000,paramCorHist.kp3.quantile(0.25)*1000,paramCorHist.DT1.quantile(0.25),paramCorHist.DT2.quantile(0.25),paramCorHist.DT3.quantile(0.25),paramCorHist.res.quantile(0.25)],
-            ['Median',paramCorHist.kb1.median()*1000,paramCorHist.kb2.median(),paramCorHist.kb3.median()*1000,paramCorHist.kp1.median()*1000,paramCorHist.kp2.median()*1000,paramCorHist.kp3.median()*1000,paramCorHist.DT1.median(),paramCorHist.DT2.median(),paramCorHist.DT3.median(),paramCorHist.res.median()],
+            ['Median',paramCorHist.kb1.median()*1000,paramCorHist.kb2.median()*1000,paramCorHist.kb3.median()*1000,paramCorHist.kp1.median()*1000,paramCorHist.kp2.median()*1000,paramCorHist.kp3.median()*1000,paramCorHist.DT1.median(),paramCorHist.DT2.median(),paramCorHist.DT3.median(),paramCorHist.res.median()],
             ['$3^{rd}$ Quartile',paramCorHist.kb1.quantile(0.75)*1000,paramCorHist.kb2.quantile(0.75)*1000,paramCorHist.kb3.quantile(0.75)*1000,paramCorHist.kp1.quantile(0.75)*1000,paramCorHist.kp2.quantile(0.75)*1000,paramCorHist.kp3.quantile(0.75)*1000,paramCorHist.DT1.quantile(0.75),paramCorHist.DT2.quantile(0.75),paramCorHist.DT3.quantile(0.75),paramCorHist.res.quantile(0.75)]
 
           ]
@@ -164,7 +164,7 @@ xT = ['$ k_{b}^{1} $', '$ k_{b}^{2} $', '$ k_{b}^{3} $', '$ k_{p}^{1} $', '$ k_{
 def heat_plot(ppGroup): 
     global downloadable_BiVar_zipRand 
     paramCorDrop = paramCorBiVar[['kb1', 'kb2', 'kb3', 'kp1', 'kp2', 'kp3', 'DT1', 'DT2', 'DT3']]
-    corrMatrix  = paramCorDrop.corr()
+    corrMatrix  = paramCorDrop.corr(method='spearman')
     paramCorBiVar1000 = paramCorBiVar.copy()
     paramCorBiVar1000.kb1=paramCorBiVar1000.kb1*1000
     paramCorBiVar1000.kb2=paramCorBiVar1000.kb2*1000
@@ -244,7 +244,7 @@ def heat_plot(ppGroup):
                         hovertemplate =
                      #   '<br>X: %{x}<br>'+
                      #   '<br>Y: %{y}<br>'+
-                        '<br>r: %{text}<br><extra></extra>',
+                        '<br>rho: %{text}<br><extra></extra>',
                         #text = ['0.5'],
                         xgap=1,
                         ygap=1,
@@ -1476,7 +1476,7 @@ app.layout = html.Div([
                     children=html.Div(className='control-tab', children=[
                          html.Div(
                            [ 
-                               html.P(children='Characteristics of a selected group of animals  -  Correlation analysis', 
+                               html.P(children='Characteristics of a selected group of animals  -  Rank correlation analysis', 
                                                style={'margin-top':'7px','margin-bottom':'5px','vertical-align': 'middle',
                                                      'text-align':'center','font-size': '13pt','fontWeight': 'bold'}),
                            ],
