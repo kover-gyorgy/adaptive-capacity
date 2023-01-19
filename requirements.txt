@@ -19,7 +19,7 @@ kiwisolver==1.2.0
 MarkupSafe==1.1.1
 matplotlib==3.2.2
 numpy==1.19.0
-pandas==1.0.5
+pandas
 plotly==4.8.1
 pyparsing==2.4.7
 python-dateutil==2.8.1
