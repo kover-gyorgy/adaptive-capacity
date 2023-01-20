@@ -147,9 +147,9 @@ def descriptives():
             ['Sd',paramCorHist.kb1.std()*1000,paramCorHist.kb2.std()*1000,paramCorHist.kb3.std()*1000,paramCorHist.kp1.std()*1000,paramCorHist.kp2.std()*1000,paramCorHist.kp3.std()*1000,paramCorHist.DT1.std(),paramCorHist.DT2.std(),paramCorHist.DT3.std(),paramCorHist.res.std()],
             ['Min',paramCorHist.kb1.min()*1000,paramCorHist.kb2.min()*1000,paramCorHist.kb3.min()*1000,paramCorHist.kp1.min()*1000,paramCorHist.kp2.min()*1000,paramCorHist.kp3.min()*1000,paramCorHist.DT1.min(),paramCorHist.DT2.min(),paramCorHist.DT3.min(),paramCorHist.res.min()],
             ['Max',paramCorHist.kb1.max()*1000,paramCorHist.kb2.max()*1000,paramCorHist.kb3.max()*1000,paramCorHist.kp1.max()*1000,paramCorHist.kp2.max()*1000,paramCorHist.kp3.max()*1000,paramCorHist.DT1.max(),paramCorHist.DT2.max(),paramCorHist.DT3.max(),paramCorHist.res.max()],
-            ['$1^{st}$ Quartile',paramCorHist.kb1.quantile(0.25)*1000,paramCorHist.kb2.quantile(0.25)*1000,paramCorHist.kb3.quantile(0.25)*1000,paramCorHist.kp1.quantile(0.25)*1000,paramCorHist.kp2.quantile(0.25)*1000,paramCorHist.kp3.quantile(0.25)*1000,paramCorHist.DT1.quantile(0.25),paramCorHist.DT2.quantile(0.25),paramCorHist.DT3.quantile(0.25),paramCorHist.res.quantile(0.25)],
+            ['\(1^{st}\) Quartile',paramCorHist.kb1.quantile(0.25)*1000,paramCorHist.kb2.quantile(0.25)*1000,paramCorHist.kb3.quantile(0.25)*1000,paramCorHist.kp1.quantile(0.25)*1000,paramCorHist.kp2.quantile(0.25)*1000,paramCorHist.kp3.quantile(0.25)*1000,paramCorHist.DT1.quantile(0.25),paramCorHist.DT2.quantile(0.25),paramCorHist.DT3.quantile(0.25),paramCorHist.res.quantile(0.25)],
             ['Median',paramCorHist.kb1.median()*1000,paramCorHist.kb2.median()*1000,paramCorHist.kb3.median()*1000,paramCorHist.kp1.median()*1000,paramCorHist.kp2.median()*1000,paramCorHist.kp3.median()*1000,paramCorHist.DT1.median(),paramCorHist.DT2.median(),paramCorHist.DT3.median(),paramCorHist.res.median()],
-            ['$3^{rd}$ Quartile',paramCorHist.kb1.quantile(0.75)*1000,paramCorHist.kb2.quantile(0.75)*1000,paramCorHist.kb3.quantile(0.75)*1000,paramCorHist.kp1.quantile(0.75)*1000,paramCorHist.kp2.quantile(0.75)*1000,paramCorHist.kp3.quantile(0.75)*1000,paramCorHist.DT1.quantile(0.75),paramCorHist.DT2.quantile(0.75),paramCorHist.DT3.quantile(0.75),paramCorHist.res.quantile(0.75)]
+            ['\(3^{rd}\) Quartile',paramCorHist.kb1.quantile(0.75)*1000,paramCorHist.kb2.quantile(0.75)*1000,paramCorHist.kb3.quantile(0.75)*1000,paramCorHist.kp1.quantile(0.75)*1000,paramCorHist.kp2.quantile(0.75)*1000,paramCorHist.kp3.quantile(0.75)*1000,paramCorHist.DT1.quantile(0.75),paramCorHist.DT2.quantile(0.75),paramCorHist.DT3.quantile(0.75),paramCorHist.res.quantile(0.75)]
 
           ]
     lParanalKbkpTime = pd.DataFrame(data,columns=['stat','kb1','kb2','kb3','kp1','kp2','kp3','DT1','DT2','DT3','RSS'])   
@@ -159,7 +159,7 @@ def descriptives():
 ParanalKbkpTime = descriptives()
                                                  
 xTv = ['kb1', 'kb2', 'kb3', 'kp1', 'kp2', 'kp3', 'DT1', 'DT2', 'DT3']
-xT = ['$ k_{b}^{1} $', '$ k_{b}^{2} $', '$ k_{b}^{3} $', '$ k_{p}^{1} $', '$ k_{p}^{2} $', '$ k_{p}^{3} $', ' $\Delta T^1$ ', ' $\Delta T^2$ ', ' $\Delta T^3$ ']
+xT = ['\( k_{b}^{1} \)', '\( k_{b}^{2} \)', '\( k_{b}^{3} \)', '\( k_{p}^{1} \)', '\( k_{p}^{2} \)', '\( k_{p}^{3} \)', '\( \Delta T^1 \)', '\( \Delta T^2 \)', '\( \Delta T^3 \)']
 
 def heat_plot(ppGroup): 
     global downloadable_BiVar_zipRand 
@@ -545,7 +545,7 @@ def model_plot1(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="$ t_{b}^{1} $",
+            text="\( t_{b}^{1} \)",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -568,7 +568,7 @@ def model_plot1(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="$ t_{e}^{1} $",
+            text="\( t_{e}^{1} \)",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -592,7 +592,7 @@ def model_plot1(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="$ t_{b}^{2} $",
+            text="\( t_{b}^{2} \)",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -615,7 +615,7 @@ def model_plot1(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="$ t_{e}^{2} $",
+            text="\( t_{e}^{2} \)",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -639,7 +639,7 @@ def model_plot1(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="$ t_{b}^{3} $",
+            text="\( t_{b}^{3} \)",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -662,7 +662,7 @@ def model_plot1(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="$ t_{e}^{3} $",
+            text="\( t_{e}^{3} \)",
             font=dict(size=16,color="blue")
             )) 
         figure.add_shape(
@@ -720,7 +720,7 @@ def model_plot2(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="$ t_{b}^{1} $",
+            text="\( t_{b}^{1} \)",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -743,7 +743,7 @@ def model_plot2(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="$ t_{e}^{1} $",
+            text="\( t_{e}^{1} \)",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -767,7 +767,7 @@ def model_plot2(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="$ t_{b}^{2} $",
+            text="\( t_{b}^{2} \)",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -790,7 +790,7 @@ def model_plot2(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="$ t_{e}^{2} $",
+            text="\( t_{e}^{2} \)",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -814,7 +814,7 @@ def model_plot2(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="$ t_{b}^{3} $",
+            text="\( t_{b}^{3} \)",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -837,7 +837,7 @@ def model_plot2(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="$ t_{e}^{3} $",
+            text="\( t_{e}^{3} \)",
             font=dict(size=16,color="blue")
             )) 
         figure.add_shape(
@@ -865,43 +865,43 @@ def hist_graph(name,ppGroup):
     global downloadable_Descr_zipRand 
     if name== 'kb1': 
         xx = paramCorHist.kb1.copy()*1000
-        nameTex = '$ k_{b}^{1} $'
+        nameTex = '\( k_{b}^{1} \)'
     if name== 'kb2': 
         xx = paramCorHist.kb2.copy()*1000
-        nameTex = '$ k_{b}^{2} $'
+        nameTex = '\( k_{b}^{2} \)'
     if name== 'kb3': 
         xx = paramCorHist.kb3.copy()*1000
-        nameTex = '$ k_{b}^{3} $'
+        nameTex = '\( k_{b}^{3} \)'
     if name== 'kp1': 
         xx = paramCorHist.kp1.copy()*1000
-        nameTex = '$ k_{p}^{1} $'
+        nameTex = '\( k_{p}^{1} \)'
     if name== 'kp2': 
         xx = paramCorHist.kp2.copy()*1000
-        nameTex = '$ k_{p}^{2} $'
+        nameTex = '\( k_{p}^{2} \)'
     if name== 'kp3': 
         xx = paramCorHist.kp3.copy()*1000
-        nameTex = '$ k_{p}^{3} $'
+        nameTex = '\( k_{p}^{3} \)'
     if name== 'RSS': 
         xx = paramCorHist.res.copy()
-        nameTex = '$ RSE $'
+        nameTex = '\( RSE \)'
     if name== 'tb1': 
         xx = paramCorHist.tb1.copy()
-        nameTex = '$ t_{b}^{1} $'
+        nameTex = '\( t_{b}^{1} \)'
     if name== 'tb2': 
         xx = paramCorHist.tb2.copy()
-        nameTex = '$ t_{b}^{2} $'
+        nameTex = '\( t_{b}^{2} \)'
     if name== 'tb3': 
         xx = paramCorHist.tb3.copy()
-        nameTex = '$ t_{b}^{3} $'
+        nameTex = '\( t_{b}^{3} \)'
     if name== 'DeltaT1': 
         xx = paramCorHist.DT1.copy()    
-        nameTex = '$ \Delta T_1 $'
+        nameTex = '\( \Delta T_1 \)'
     if name== 'DeltaT2': 
         xx = paramCorHist.DT2.copy()
-        nameTex = '$ \Delta T_2 $'
+        nameTex = '\( \Delta T_2 \)'
     if name== 'DeltaT3': 
         xx = paramCorHist.DT3.copy()
-        nameTex = '$ \Delta T_3 $'
+        nameTex = '\( \Delta T_3 \)'
     nanCnt=np.count_nonzero(~np.isnan(xx))
     if nanCnt==0: 
         figure = go.Figure(data=[go.Histogram( nbinsx=300,     
@@ -1207,7 +1207,7 @@ app.layout = html.Div([
                                html.P(children='Characterize the response of one animal to NEB challenge during one or several productive cycle', 
                                                style={'margin-top':'7px','margin-bottom':'5px','vertical-align': 'middle',
                                                      'text-align':'center','font-size': '13pt','fontWeight': 'bold'}),
-                               html.P(children='In this part you select an animal based on the number of parities, to see how its response in term of the variation of $BCS$ is summerized with four parameters per parity ( $k_b$, $k_p$, $t_b$, $\Delta T$ ). ', 
+                               html.P(children='In this part you select an animal based on the number of parities, to see how its response in term of the variation of \(BCS\) is summerized with four parameters per parity ( \(k_{b}\), \(k_{p}\), \(t_{b}\), \(\Delta T\) ). ', 
                                                style={ 'text-align':'center','font-size': '12pt'}
                                                ),
                                           
@@ -1289,8 +1289,10 @@ app.layout = html.Div([
                                                     dash_table.DataTable(
                                                         id='tableFich',
                                                         columns=[{"name":"Parity", "id": "parity"},
-                                                                 {"name":"$ k_b $", "id": "kb", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                                                                 {"name":"$ k_p $", "id": "kp", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                                 #{"name":"$ k_b $", "id": "kb", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                                 {"name":"\( k_{b} \)", "id": "kb", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                                 #{"name":"$ k_p $", "id": "kp", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                                 {"name":"\( k_{p} \)", "id": "kp", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
                                                                 ],
                                                         style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'minWidth': '40px', 'width': '40px', 'maxWidth': '40px', 'padding': '2px' },
                                                         style_table={'textAlign': 'center', 'maxHeight': 400},
@@ -1306,8 +1308,10 @@ app.layout = html.Div([
                                                     dash_table.DataTable(
                                                         id='tableFich2',
                                                         columns=[{"name":"Parity", "id": "parity"},
-                                                                 {"name":"$ t_b $", "id": "tb"},
-                                                                 {"name":"$\Delta T$", "id": "DT"}
+                                                                 #{"name":"$ t_b $", "id": "tb"},
+                                                                 {"name":"\( t_{b} \)", "id": "tb"},
+                                                                 #{"name":"$\Delta T$", "id": "DT"}
+                                                                 {"name":"\(\Delta T\)", "id": "DT"}
                                                                 ],
                                                         style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'minWidth': '40px', 'width': '40px', 'maxWidth': '40px', 'padding': '2px' },
                                                         style_table={'textAlign': 'center', 'maxHeight': 400},
@@ -1431,19 +1435,19 @@ app.layout = html.Div([
                                html.Div(
                                     [
                                             dcc.RadioItems(id = 'input-radio-button',
-                                                                  options = [dict(label = '$ k_{b}^{1} $', value = 'kb1'),
-                                                                             dict(label = '$ k_{b}^{2} $', value = 'kb2'),
-                                                                             dict(label = '$ k_{b}^{3} $', value = 'kb3'),
-                                                                             dict(label = '$ k_{p}^{1} $', value = 'kp1'),
-                                                                             dict(label = '$ k_{p}^{2} $', value = 'kp2'),
-                                                                             dict(label = '$ k_{p}^{3} $', value = 'kp3'),
-                                                                             dict(label = '$ RSE $', value = 'RSS'),
-                                                                             dict(label = '$ t_{b}^{1} $', value = 'tb1'),
-                                                                             dict(label = '$ t_{b}^{2} $', value = 'tb2'),
-                                                                             dict(label = '$ t_{b}^{3} $', value = 'tb3'),
-                                                                             dict(label = '$ \Delta T^1 $', value = 'DeltaT1'),
-                                                                             dict(label = '$ \Delta T^2 $', value = 'DeltaT2'),
-                                                                             dict(label = '$ \Delta T^3 $', value = 'DeltaT3')
+                                                                  options = [dict(label = '\( k_{b}^{1} \)', value = 'kb1'),
+                                                                             dict(label = '\( k_{b}^{2} \)', value = 'kb2'),
+                                                                             dict(label = '\( k_{b}^{3} \)', value = 'kb3'),
+                                                                             dict(label = '\( k_{p}^{1} \)', value = 'kp1'),
+                                                                             dict(label = '\( k_{p}^{2} \)', value = 'kp2'),
+                                                                             dict(label = '\( k_{p}^{3} \)', value = 'kp3'),
+                                                                             dict(label = '\( RSE \)', value = 'RSS'),
+                                                                             dict(label = '\( t_{b}^{1} \)', value = 'tb1'),
+                                                                             dict(label = '\( t_{b}^{2} \)', value = 'tb2'),
+                                                                             dict(label = '\( t_{b}^{3} \)', value = 'tb3'),
+                                                                             dict(label = '\( \Delta T^1 \)', value = 'DeltaT1'),
+                                                                             dict(label = '\( \Delta T^2 \)', value = 'DeltaT2'),
+                                                                             dict(label = '\( \Delta T^3 \)', value = 'DeltaT3')
                                                                             ],
                                                                   value = 'RSS',
                                           labelStyle={"padding-left": "10px",'display': 'block','margin-top': '4px',},
