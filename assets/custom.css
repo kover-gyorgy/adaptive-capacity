@@ -185,3 +185,5 @@ input[type=number]::-webkit-outer-spin-button {
       -webkit-appearance: none; 
       margin: 0; 
 }
+.rc-slider-mark {
+	display: none !important;
