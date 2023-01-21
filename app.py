@@ -24,7 +24,7 @@ import zipfile
 from os.path import basename
 
 app = dash.Dash(__name__, external_scripts=[
-  'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML',
+  'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/mathjax.js?config=TeX-MML-AM_CHTML',
 ]
 )
 
@@ -147,9 +147,9 @@ def descriptives():
             ['Sd',paramCorHist.kb1.std()*1000,paramCorHist.kb2.std()*1000,paramCorHist.kb3.std()*1000,paramCorHist.kp1.std()*1000,paramCorHist.kp2.std()*1000,paramCorHist.kp3.std()*1000,paramCorHist.DT1.std(),paramCorHist.DT2.std(),paramCorHist.DT3.std(),paramCorHist.res.std()],
             ['Min',paramCorHist.kb1.min()*1000,paramCorHist.kb2.min()*1000,paramCorHist.kb3.min()*1000,paramCorHist.kp1.min()*1000,paramCorHist.kp2.min()*1000,paramCorHist.kp3.min()*1000,paramCorHist.DT1.min(),paramCorHist.DT2.min(),paramCorHist.DT3.min(),paramCorHist.res.min()],
             ['Max',paramCorHist.kb1.max()*1000,paramCorHist.kb2.max()*1000,paramCorHist.kb3.max()*1000,paramCorHist.kp1.max()*1000,paramCorHist.kp2.max()*1000,paramCorHist.kp3.max()*1000,paramCorHist.DT1.max(),paramCorHist.DT2.max(),paramCorHist.DT3.max(),paramCorHist.res.max()],
-            ['\(1^{st}\) Quartile',paramCorHist.kb1.quantile(0.25)*1000,paramCorHist.kb2.quantile(0.25)*1000,paramCorHist.kb3.quantile(0.25)*1000,paramCorHist.kp1.quantile(0.25)*1000,paramCorHist.kp2.quantile(0.25)*1000,paramCorHist.kp3.quantile(0.25)*1000,paramCorHist.DT1.quantile(0.25),paramCorHist.DT2.quantile(0.25),paramCorHist.DT3.quantile(0.25),paramCorHist.res.quantile(0.25)],
+            ['$1^{st}$ Quartile',paramCorHist.kb1.quantile(0.25)*1000,paramCorHist.kb2.quantile(0.25)*1000,paramCorHist.kb3.quantile(0.25)*1000,paramCorHist.kp1.quantile(0.25)*1000,paramCorHist.kp2.quantile(0.25)*1000,paramCorHist.kp3.quantile(0.25)*1000,paramCorHist.DT1.quantile(0.25),paramCorHist.DT2.quantile(0.25),paramCorHist.DT3.quantile(0.25),paramCorHist.res.quantile(0.25)],
             ['Median',paramCorHist.kb1.median()*1000,paramCorHist.kb2.median()*1000,paramCorHist.kb3.median()*1000,paramCorHist.kp1.median()*1000,paramCorHist.kp2.median()*1000,paramCorHist.kp3.median()*1000,paramCorHist.DT1.median(),paramCorHist.DT2.median(),paramCorHist.DT3.median(),paramCorHist.res.median()],
-            ['\(3^{rd}\) Quartile',paramCorHist.kb1.quantile(0.75)*1000,paramCorHist.kb2.quantile(0.75)*1000,paramCorHist.kb3.quantile(0.75)*1000,paramCorHist.kp1.quantile(0.75)*1000,paramCorHist.kp2.quantile(0.75)*1000,paramCorHist.kp3.quantile(0.75)*1000,paramCorHist.DT1.quantile(0.75),paramCorHist.DT2.quantile(0.75),paramCorHist.DT3.quantile(0.75),paramCorHist.res.quantile(0.75)]
+            ['$3^{rd}$ Quartile',paramCorHist.kb1.quantile(0.75)*1000,paramCorHist.kb2.quantile(0.75)*1000,paramCorHist.kb3.quantile(0.75)*1000,paramCorHist.kp1.quantile(0.75)*1000,paramCorHist.kp2.quantile(0.75)*1000,paramCorHist.kp3.quantile(0.75)*1000,paramCorHist.DT1.quantile(0.75),paramCorHist.DT2.quantile(0.75),paramCorHist.DT3.quantile(0.75),paramCorHist.res.quantile(0.75)]
 
           ]
     lParanalKbkpTime = pd.DataFrame(data,columns=['stat','kb1','kb2','kb3','kp1','kp2','kp3','DT1','DT2','DT3','RSS'])   
@@ -159,7 +159,7 @@ def descriptives():
 ParanalKbkpTime = descriptives()
                                                  
 xTv = ['kb1', 'kb2', 'kb3', 'kp1', 'kp2', 'kp3', 'DT1', 'DT2', 'DT3']
-xT = ['\( k_{b}^{1} \)', '\( k_{b}^{2} \)', '\( k_{b}^{3} \)', '\( k_{p}^{1} \)', '\( k_{p}^{2} \)', '\( k_{p}^{3} \)', '\( \Delta T^1 \)', '\( \Delta T^2 \)', '\( \Delta T^3 \)']
+xT = [r'$$ k_{b}^{1} $$', '$$ k_{b}^{2} $$', '$$ k_{b}^{3} $$', '$$ k_{p}^{1} $$', '$$ k_{p}^{2} $$', '$$ k_{p}^{3} $$', ' $$\Delta T^1$$ ', ' $$\Delta T^2$$ ', ' $$\Delta T^3$$ ']
 
 def heat_plot(ppGroup): 
     global downloadable_BiVar_zipRand 
@@ -545,7 +545,7 @@ def model_plot1(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="\( t_{b}^{1} \)",
+            text="$ t_{b}^{1} $",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -568,7 +568,7 @@ def model_plot1(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="\( t_{e}^{1} \)",
+            text="$ t_{e}^{1} $",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -592,7 +592,7 @@ def model_plot1(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="\( t_{b}^{2} \)",
+            text="$ t_{b}^{2} $",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -615,7 +615,7 @@ def model_plot1(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="\( t_{e}^{2} \)",
+            text="$ t_{e}^{2} $",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -639,7 +639,7 @@ def model_plot1(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="\( t_{b}^{3} \)",
+            text="$ t_{b}^{3} $",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -662,7 +662,7 @@ def model_plot1(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="\( t_{e}^{3} \)",
+            text="$ t_{e}^{3} $",
             font=dict(size=16,color="blue")
             )) 
         figure.add_shape(
@@ -720,7 +720,7 @@ def model_plot2(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="\( t_{b}^{1} \)",
+            text="$ t_{b}^{1} $",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -743,7 +743,7 @@ def model_plot2(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="\( t_{e}^{1} \)",
+            text="$ t_{e}^{1} $",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -767,7 +767,7 @@ def model_plot2(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="\( t_{b}^{2} \)",
+            text="$ t_{b}^{2} $",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -790,7 +790,7 @@ def model_plot2(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="\( t_{e}^{2} \)",
+            text="$ t_{e}^{2} $",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -814,7 +814,7 @@ def model_plot2(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="\( t_{b}^{3} \)",
+            text="$ t_{b}^{3} $",
             font=dict(size=16,color="blue")
             ))  
         figure.add_shape(
@@ -837,7 +837,7 @@ def model_plot2(pTimes,pSol):
             xref="x",
             yref="y",
             showarrow=False,
-            text="\( t_{e}^{3} \)",
+            text="$ t_{e}^{3} $",
             font=dict(size=16,color="blue")
             )) 
         figure.add_shape(
@@ -865,43 +865,43 @@ def hist_graph(name,ppGroup):
     global downloadable_Descr_zipRand 
     if name== 'kb1': 
         xx = paramCorHist.kb1.copy()*1000
-        nameTex = '\( k_{b}^{1} \)'
+        nameTex = '$ k_{b}^{1} $'
     if name== 'kb2': 
         xx = paramCorHist.kb2.copy()*1000
-        nameTex = '\( k_{b}^{2} \)'
+        nameTex = '$ k_{b}^{2} $'
     if name== 'kb3': 
         xx = paramCorHist.kb3.copy()*1000
-        nameTex = '\( k_{b}^{3} \)'
+        nameTex = '$ k_{b}^{3} $'
     if name== 'kp1': 
         xx = paramCorHist.kp1.copy()*1000
-        nameTex = '\( k_{p}^{1} \)'
+        nameTex = '$ k_{p}^{1} $'
     if name== 'kp2': 
         xx = paramCorHist.kp2.copy()*1000
-        nameTex = '\( k_{p}^{2} \)'
+        nameTex = '$ k_{p}^{2} $'
     if name== 'kp3': 
         xx = paramCorHist.kp3.copy()*1000
-        nameTex = '\( k_{p}^{3} \)'
+        nameTex = '$ k_{p}^{3} $'
     if name== 'RSS': 
         xx = paramCorHist.res.copy()
-        nameTex = '\( RSE \)'
+        nameTex = '$ RSE $'
     if name== 'tb1': 
         xx = paramCorHist.tb1.copy()
-        nameTex = '\( t_{b}^{1} \)'
+        nameTex = '$ t_{b}^{1} $'
     if name== 'tb2': 
         xx = paramCorHist.tb2.copy()
-        nameTex = '\( t_{b}^{2} \)'
+        nameTex = '$ t_{b}^{2} $'
     if name== 'tb3': 
         xx = paramCorHist.tb3.copy()
-        nameTex = '\( t_{b}^{3} \)'
+        nameTex = '$ t_{b}^{3} $'
     if name== 'DeltaT1': 
         xx = paramCorHist.DT1.copy()    
-        nameTex = '\( \Delta T_1 \)'
+        nameTex = '$ \Delta T_1 $'
     if name== 'DeltaT2': 
         xx = paramCorHist.DT2.copy()
-        nameTex = '\( \Delta T_2 \)'
+        nameTex = '$ \Delta T_2 $'
     if name== 'DeltaT3': 
         xx = paramCorHist.DT3.copy()
-        nameTex = '\( \Delta T_3 \)'
+        nameTex = '$ \Delta T_3 $'
     nanCnt=np.count_nonzero(~np.isnan(xx))
     if nanCnt==0: 
         figure = go.Figure(data=[go.Histogram( nbinsx=300,     
@@ -1054,9 +1054,9 @@ app.layout = html.Div([
                                   html.P(children=[
                                        html.Strong('Regulations of the model for one productive cycle:')], style={ 'font-size': '12pt'}),
                                   html.P(children=[
-                                              'Flux to BCS is regulated by the difference between \(BCS_i\)  and the \(BCS_m\). '
-                                              'The flux to \(p_i\)  is activated in the interval  \([t_b^i,t_e^i ]\) and will stop when it reaches \(p_m\).  '
-                                              'From the beginning of the perturbation, the decrease of \(BCS_i\) is counterbalanced by all internal physiological mechanisms of the ewes looking to keep the \(BCS_i\) close to \(BCS_m\).'
+                                              dcc.Markdown('Flux to BCS is regulated by the difference between $BCS_i$  and the $BCS_m$. ', mathjax=True),
+                                              dcc.Markdown('The flux to $p_i$  is activated in the interval  $[t_b^i,t_e^i ]$ and will stop when it reaches $p_m$.  ', mathjax=True),
+                                              dcc.Markdown('From the beginning of the perturbation, the decrease of $BCS_i$ is counterbalanced by all internal physiological mechanisms of the ewes looking to keep the $BCS_i$ close to $BCS_m$.', mathjax=True),
                                             ], style={ 'font-size': '12pt'})
                                  # ], style={'width': '500px','padding': '4px','border-width': 'thin','border-style':'solid','margin-top': '20px', 'margin-left': 'auto', 'margin-right': 'auto', 'text-align': 'justify'}
                                    ], style={'padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
@@ -1132,6 +1132,7 @@ app.layout = html.Div([
                                                     ),
                                                     dcc.Graph(id='ModelPlot2',
                                                                 figure=model_plot2(ttTT,ssSS),
+                                                                mathjax=True,
                                                                 config={
                                                                    'displayModeBar': False},
                                                                 style={'margin': '0px 7px 0px 0px',
@@ -1165,22 +1166,22 @@ app.layout = html.Div([
                                                             ],
                                                     style={'width': '90%','margin-bottom': '2vh','margin-left': '2vh','margin-top': '20px', 'text-align': 'right'} #,  'z-index': '1'
                                                 ), 
-                                                generate_slider("\(k_{b}^{1}\)", "sliderKb1", gkb1_min*1000, gkb1_max*1000, gkb1*1000, 0.01, gkb1*1000),
-                                                generate_slider("\(k_{b}^{2}\)", "sliderKb2", gkb2_min*1000, gkb2_max*1000, gkb2*1000, 0.01, gkb2*1000),
-                                                generate_slider("\(k_{b}^{3}\)", "sliderKb3", gkb3_min*1000, gkb3_max*1000, gkb3*1000, 0.01, gkb3*1000),
-                                                generate_slider("\(k_{p}^{1}\)", "sliderKp1", gkp1_min*1000, gkp1_max*1000, gkp1*1000, 0.01, gkp1*1000),
-                                                generate_slider("\(k_{p}^{2}\)", "sliderKp2", gkp2_min*1000, gkp2_max*1000, gkp2*1000, 0.01, gkp2*1000),
-                                                generate_slider("\(k_{p}^{3}\)", "sliderKp3", gkp3_min*1000, gkp3_max*1000, gkp3*1000, 0.01, gkp3*1000),
-                                                generate_slider("\(t_{b}^{1}\)", "sliderTb1", ggtb1_min, ggtb1_max, ggtb1, 1, ggtb1),
-                                                generate_slider("\(t_{b}^{2}\)", "sliderTb2", ggtb2_min, ggtb2_max, ggtb2, 1, ggtb2),
-                                                generate_slider("\(t_{b}^{3}\)", "sliderTb3", ggtb3_min, ggtb3_max, ggtb3, 1, ggtb3),
-                                                generate_slider("\(\Delta T^1\)", "sliderTe1",ggte1_min, ggte1_max, ggte1, 1, ggte1-ggtb1),
-                                                generate_slider("\(\Delta T^2\)", "sliderTe2",ggte2_min, ggte2_max, ggte2, 1, ggte2-ggtb2),
-                                                generate_slider("\(\Delta T^3\)", "sliderTe3",ggte3_min, ggte3_max, ggte3, 1, ggte3-ggtb3),
+                                                generate_slider(dcc.Markdown("$k_{b}^{1}$", mathjax=True), "sliderKb1", gkb1_min*1000, gkb1_max*1000, gkb1*1000, 0.01, gkb1*1000),
+                                                generate_slider(dcc.Markdown("$k_{b}^{2}$", mathjax=True), "sliderKb2", gkb2_min*1000, gkb2_max*1000, gkb2*1000, 0.01, gkb2*1000),
+                                                generate_slider(dcc.Markdown("$k_{b}^{3}$", mathjax=True), "sliderKb3", gkb3_min*1000, gkb3_max*1000, gkb3*1000, 0.01, gkb3*1000),
+                                                generate_slider(dcc.Markdown("$k_{p}^{1}$", mathjax=True), "sliderKp1", gkp1_min*1000, gkp1_max*1000, gkp1*1000, 0.01, gkp1*1000),
+                                                generate_slider(dcc.Markdown("$k_{p}^{2}$", mathjax=True), "sliderKp2", gkp2_min*1000, gkp2_max*1000, gkp2*1000, 0.01, gkp2*1000),
+                                                generate_slider(dcc.Markdown("$k_{p}^{3}$", mathjax=True), "sliderKp3", gkp3_min*1000, gkp3_max*1000, gkp3*1000, 0.01, gkp3*1000),
+                                                generate_slider(dcc.Markdown("$t_{b}^{1}$", mathjax=True), "sliderTb1", ggtb1_min, ggtb1_max, ggtb1, 1, ggtb1),
+                                                generate_slider(dcc.Markdown("$t_{b}^{2}$", mathjax=True), "sliderTb2", ggtb2_min, ggtb2_max, ggtb2, 1, ggtb2),
+                                                generate_slider(dcc.Markdown("$t_{b}^{3}$", mathjax=True), "sliderTb3", ggtb3_min, ggtb3_max, ggtb3, 1, ggtb3),
+                                                generate_slider(dcc.Markdown(r"$\Delta T^1$", mathjax=True), "sliderTe1",ggte1_min, ggte1_max, ggte1, 1, ggte1-ggtb1),
+                                                generate_slider(dcc.Markdown(r"$\Delta T^2$", mathjax=True), "sliderTe2",ggte2_min, ggte2_max, ggte2, 1, ggte2-ggtb2),
+                                                generate_slider(dcc.Markdown(r"$\Delta T^3$", mathjax=True), "sliderTe3",ggte3_min, ggte3_max, ggte3, 1, ggte3-ggtb3),
                                                 
-                                                generate_slider("\(BCS_{1}\)", "sliderBCS1", 2, 3.5, 3.0, 0.01, 3.0),
-                                                generate_slider("\(BCS_{2}\)", "sliderBCS2", 2, 3.5, 2.5, 0.01, 2.5),
-                                                generate_slider("\(BCS_{3}\)", "sliderBCS3", 2, 3.5, 2.5, 0.01, 2.6),
+                                                generate_slider(dcc.Markdown("$BCS_{1}$", mathjax=True), "sliderBCS1", 2, 3.5, 3.0, 0.01, 3.0),
+                                                generate_slider(dcc.Markdown("$BCS_{2}$", mathjax=True), "sliderBCS2", 2, 3.5, 2.5, 0.01, 2.5),
+                                                generate_slider(dcc.Markdown("$BCS_{3}$", mathjax=True), "sliderBCS3", 2, 3.5, 2.5, 0.01, 2.6),
                                             ],
                                                 style={'width': '90%','margin-bottom': '2vh','margin-left': '0vh','margin-top': '0px'}  # ,  'z-index': '1' 
                                         )
@@ -1207,7 +1208,7 @@ app.layout = html.Div([
                                html.P(children='Characterize the response of one animal to NEB challenge during one or several productive cycle', 
                                                style={'margin-top':'7px','margin-bottom':'5px','vertical-align': 'middle',
                                                      'text-align':'center','font-size': '13pt','fontWeight': 'bold'}),
-                               html.P(children='In this part you select an animal based on the number of parities, to see how its response in term of the variation of \(BCS\) is summerized with four parameters per parity ( \(k_{b}\), \(k_{p}\), \(t_{b}\), \(\Delta T\) ). ', 
+                               html.P(children=dcc.Markdown('In this part you select an animal based on the number of parities, to see how its response in term of the variation of $BCS$ is summerized with four parameters per parity ( $k_b$, $k_p$, $t_b$, $\Delta T$ ). ', mathjax=True),
                                                style={ 'text-align':'center','font-size': '12pt'}
                                                ),
                                           
@@ -1265,6 +1266,7 @@ app.layout = html.Div([
                                 html.Div( 
                                     children=[     
                                                 dcc.Graph(id='BCS-graph',
+                                                            mathjax=True,
                                                             config={
                                                                'displayModeBar': False},
                                                             style={'margin': '0px','margin-top': '7px','margin-right': '7px',
@@ -1289,10 +1291,8 @@ app.layout = html.Div([
                                                     dash_table.DataTable(
                                                         id='tableFich',
                                                         columns=[{"name":"Parity", "id": "parity"},
-                                                                 #{"name":"$ k_b $", "id": "kb", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                                                                 {"name":"\( k_{b} \)", "id": "kb", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                                                                 #{"name":"$ k_p $", "id": "kp", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
-                                                                 {"name":"\( k_{p} \)", "id": "kp", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                                 {"name":"\( k_b \)", "id": "kb", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed), 'presentation':'markdown'},
+                                                                 {"name":"\( k_p \)", "id": "kp", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
                                                                 ],
                                                         style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'minWidth': '40px', 'width': '40px', 'maxWidth': '40px', 'padding': '2px' },
                                                         style_table={'textAlign': 'center', 'maxHeight': 400},
@@ -1308,9 +1308,7 @@ app.layout = html.Div([
                                                     dash_table.DataTable(
                                                         id='tableFich2',
                                                         columns=[{"name":"Parity", "id": "parity"},
-                                                                 #{"name":"$ t_b $", "id": "tb"},
-                                                                 {"name":"\( t_{b} \)", "id": "tb"},
-                                                                 #{"name":"$\Delta T$", "id": "DT"}
+                                                                 {"name":"\( t_b \)", "id": "tb"},
                                                                  {"name":"\(\Delta T\)", "id": "DT"}
                                                                 ],
                                                         style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'minWidth': '40px', 'width': '40px', 'maxWidth': '40px', 'padding': '2px' },
@@ -1424,6 +1422,7 @@ app.layout = html.Div([
                                             dcc.Graph(
                                                 id = 'graphHist',    
                                                 figure=hist_graph(hist_Var,'G123'),
+                                                mathjax=True,
                                                             config={
                                                                'displayModeBar': False},
                                                             style={'margin': '0px','margin-top': '7px','margin-right': '7px',
@@ -1524,6 +1523,7 @@ app.layout = html.Div([
                                     children=[  
                                                 dcc.Graph(id='graphHeat',
                                                             figure=heat_plot('G123'),
+                                                            mathjax=True,
                                                             config={
                                                                'displayModeBar': False},
                                                             style={'margin': '0px','margin-top': '7px','margin-right': '7px',
@@ -1598,6 +1598,7 @@ app.layout = html.Div([
                                     children=[  
                                                 dcc.Graph(id='Scatter-graph',
                                                             figure=scatter_plot(),
+                                                            mathjax=True,
                                                             config={
                                                                'displayModeBar': False},
                                                             style={'margin': '0px','margin-top': '7px','margin-right': '7px',
