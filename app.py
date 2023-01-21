@@ -24,7 +24,7 @@ import zipfile
 from os.path import basename
 
 app = dash.Dash(__name__, external_scripts=[
-  'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/mathjax.js?config=TeX-MML-AM_CHTML',
+  'https://cdnjs.cloudflare.com/ajax/libs/mathjax/2.7.7/MathJax.js?config=TeX-MML-AM_CHTML',
 ]
 )
 
@@ -159,7 +159,7 @@ def descriptives():
 ParanalKbkpTime = descriptives()
                                                  
 xTv = ['kb1', 'kb2', 'kb3', 'kp1', 'kp2', 'kp3', 'DT1', 'DT2', 'DT3']
-xT = [r'$$ k_{b}^{1} $$', '$$ k_{b}^{2} $$', '$$ k_{b}^{3} $$', '$$ k_{p}^{1} $$', '$$ k_{p}^{2} $$', '$$ k_{p}^{3} $$', ' $$\Delta T^1$$ ', ' $$\Delta T^2$$ ', ' $$\Delta T^3$$ ']
+xT = ['$ k_{b}^{1} $', '$ k_{b}^{2} $', '$ k_{b}^{3} $', '$ k_{p}^{1} $', '$ k_{p}^{2} $', '$ k_{p}^{3} $', ' $\Delta T^1$ ', ' $\Delta T^2$ ', ' $\Delta T^3$ ']
 
 def heat_plot(ppGroup): 
     global downloadable_BiVar_zipRand 
@@ -1054,9 +1054,9 @@ app.layout = html.Div([
                                   html.P(children=[
                                        html.Strong('Regulations of the model for one productive cycle:')], style={ 'font-size': '12pt'}),
                                   html.P(children=[
-                                              dcc.Markdown('Flux to BCS is regulated by the difference between $BCS_i$  and the $BCS_m$. ', mathjax=True),
-                                              dcc.Markdown('The flux to $p_i$  is activated in the interval  $[t_b^i,t_e^i ]$ and will stop when it reaches $p_m$.  ', mathjax=True),
-                                              dcc.Markdown('From the beginning of the perturbation, the decrease of $BCS_i$ is counterbalanced by all internal physiological mechanisms of the ewes looking to keep the $BCS_i$ close to $BCS_m$.', mathjax=True),
+                                              'Flux to BCS is regulated by the difference between \(BCS_i\)  and the \(BCS_m\). '
+                                              'The flux to \(p_i\)  is activated in the interval  \([t_b^i,t_e^i ]\) and will stop when it reaches \(p_m\).  '
+                                              'From the beginning of the perturbation, the decrease of \(BCS_i\) is counterbalanced by all internal physiological mechanisms of the ewes looking to keep the \(BCS_i\) close to \(BCS_m\).'
                                             ], style={ 'font-size': '12pt'})
                                  # ], style={'width': '500px','padding': '4px','border-width': 'thin','border-style':'solid','margin-top': '20px', 'margin-left': 'auto', 'margin-right': 'auto', 'text-align': 'justify'}
                                    ], style={'padding': '4px','border-width': 'thin','border-style':'solid', 'margin-bottom': '20px', 'text-align': 'justify'} 
@@ -1132,7 +1132,6 @@ app.layout = html.Div([
                                                     ),
                                                     dcc.Graph(id='ModelPlot2',
                                                                 figure=model_plot2(ttTT,ssSS),
-                                                                mathjax=True,
                                                                 config={
                                                                    'displayModeBar': False},
                                                                 style={'margin': '0px 7px 0px 0px',
@@ -1166,22 +1165,22 @@ app.layout = html.Div([
                                                             ],
                                                     style={'width': '90%','margin-bottom': '2vh','margin-left': '2vh','margin-top': '20px', 'text-align': 'right'} #,  'z-index': '1'
                                                 ), 
-                                                generate_slider(dcc.Markdown("$k_{b}^{1}$", mathjax=True), "sliderKb1", gkb1_min*1000, gkb1_max*1000, gkb1*1000, 0.01, gkb1*1000),
-                                                generate_slider(dcc.Markdown("$k_{b}^{2}$", mathjax=True), "sliderKb2", gkb2_min*1000, gkb2_max*1000, gkb2*1000, 0.01, gkb2*1000),
-                                                generate_slider(dcc.Markdown("$k_{b}^{3}$", mathjax=True), "sliderKb3", gkb3_min*1000, gkb3_max*1000, gkb3*1000, 0.01, gkb3*1000),
-                                                generate_slider(dcc.Markdown("$k_{p}^{1}$", mathjax=True), "sliderKp1", gkp1_min*1000, gkp1_max*1000, gkp1*1000, 0.01, gkp1*1000),
-                                                generate_slider(dcc.Markdown("$k_{p}^{2}$", mathjax=True), "sliderKp2", gkp2_min*1000, gkp2_max*1000, gkp2*1000, 0.01, gkp2*1000),
-                                                generate_slider(dcc.Markdown("$k_{p}^{3}$", mathjax=True), "sliderKp3", gkp3_min*1000, gkp3_max*1000, gkp3*1000, 0.01, gkp3*1000),
-                                                generate_slider(dcc.Markdown("$t_{b}^{1}$", mathjax=True), "sliderTb1", ggtb1_min, ggtb1_max, ggtb1, 1, ggtb1),
-                                                generate_slider(dcc.Markdown("$t_{b}^{2}$", mathjax=True), "sliderTb2", ggtb2_min, ggtb2_max, ggtb2, 1, ggtb2),
-                                                generate_slider(dcc.Markdown("$t_{b}^{3}$", mathjax=True), "sliderTb3", ggtb3_min, ggtb3_max, ggtb3, 1, ggtb3),
-                                                generate_slider(dcc.Markdown(r"$\Delta T^1$", mathjax=True), "sliderTe1",ggte1_min, ggte1_max, ggte1, 1, ggte1-ggtb1),
-                                                generate_slider(dcc.Markdown(r"$\Delta T^2$", mathjax=True), "sliderTe2",ggte2_min, ggte2_max, ggte2, 1, ggte2-ggtb2),
-                                                generate_slider(dcc.Markdown(r"$\Delta T^3$", mathjax=True), "sliderTe3",ggte3_min, ggte3_max, ggte3, 1, ggte3-ggtb3),
+                                                generate_slider("\(k_{b}^{1}\)", "sliderKb1", gkb1_min*1000, gkb1_max*1000, gkb1*1000, 0.01, gkb1*1000),
+                                                generate_slider("\(k_{b}^{2}\)", "sliderKb2", gkb2_min*1000, gkb2_max*1000, gkb2*1000, 0.01, gkb2*1000),
+                                                generate_slider("\(k_{b}^{3}\)", "sliderKb3", gkb3_min*1000, gkb3_max*1000, gkb3*1000, 0.01, gkb3*1000),
+                                                generate_slider("\(k_{p}^{1}\)", "sliderKp1", gkp1_min*1000, gkp1_max*1000, gkp1*1000, 0.01, gkp1*1000),
+                                                generate_slider("\(k_{p}^{2}\)", "sliderKp2", gkp2_min*1000, gkp2_max*1000, gkp2*1000, 0.01, gkp2*1000),
+                                                generate_slider("\(k_{p}^{3}\)", "sliderKp3", gkp3_min*1000, gkp3_max*1000, gkp3*1000, 0.01, gkp3*1000),
+                                                generate_slider("\(t_{b}^{1}\)", "sliderTb1", ggtb1_min, ggtb1_max, ggtb1, 1, ggtb1),
+                                                generate_slider("\(t_{b}^{2}\)", "sliderTb2", ggtb2_min, ggtb2_max, ggtb2, 1, ggtb2),
+                                                generate_slider("\(t_{b}^{3}\)", "sliderTb3", ggtb3_min, ggtb3_max, ggtb3, 1, ggtb3),
+                                                generate_slider("\(\Delta T^1\)", "sliderTe1",ggte1_min, ggte1_max, ggte1, 1, ggte1-ggtb1),
+                                                generate_slider("\(\Delta T^2\)", "sliderTe2",ggte2_min, ggte2_max, ggte2, 1, ggte2-ggtb2),
+                                                generate_slider("\(\Delta T^3\)", "sliderTe3",ggte3_min, ggte3_max, ggte3, 1, ggte3-ggtb3),
                                                 
-                                                generate_slider(dcc.Markdown("$BCS_{1}$", mathjax=True), "sliderBCS1", 2, 3.5, 3.0, 0.01, 3.0),
-                                                generate_slider(dcc.Markdown("$BCS_{2}$", mathjax=True), "sliderBCS2", 2, 3.5, 2.5, 0.01, 2.5),
-                                                generate_slider(dcc.Markdown("$BCS_{3}$", mathjax=True), "sliderBCS3", 2, 3.5, 2.5, 0.01, 2.6),
+                                                generate_slider("\(BCS_{1}\)", "sliderBCS1", 2, 3.5, 3.0, 0.01, 3.0),
+                                                generate_slider("\(BCS_{2}\)", "sliderBCS2", 2, 3.5, 2.5, 0.01, 2.5),
+                                                generate_slider("\(BCS_{3}\)", "sliderBCS3", 2, 3.5, 2.5, 0.01, 2.6),
                                             ],
                                                 style={'width': '90%','margin-bottom': '2vh','margin-left': '0vh','margin-top': '0px'}  # ,  'z-index': '1' 
                                         )
@@ -1208,7 +1207,7 @@ app.layout = html.Div([
                                html.P(children='Characterize the response of one animal to NEB challenge during one or several productive cycle', 
                                                style={'margin-top':'7px','margin-bottom':'5px','vertical-align': 'middle',
                                                      'text-align':'center','font-size': '13pt','fontWeight': 'bold'}),
-                               html.P(children=dcc.Markdown('In this part you select an animal based on the number of parities, to see how its response in term of the variation of $BCS$ is summerized with four parameters per parity ( $k_b$, $k_p$, $t_b$, $\Delta T$ ). ', mathjax=True),
+                               html.P(children='In this part you select an animal based on the number of parities, to see how its response in term of the variation of $BCS$ is summerized with four parameters per parity ( $k_b$, $k_p$, $t_b$, $\Delta T$ ). ', 
                                                style={ 'text-align':'center','font-size': '12pt'}
                                                ),
                                           
@@ -1266,7 +1265,6 @@ app.layout = html.Div([
                                 html.Div( 
                                     children=[     
                                                 dcc.Graph(id='BCS-graph',
-                                                            mathjax=True,
                                                             config={
                                                                'displayModeBar': False},
                                                             style={'margin': '0px','margin-top': '7px','margin-right': '7px',
@@ -1291,8 +1289,8 @@ app.layout = html.Div([
                                                     dash_table.DataTable(
                                                         id='tableFich',
                                                         columns=[{"name":"Parity", "id": "parity"},
-                                                                 {"name":"\( k_b \)", "id": "kb", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed), 'presentation':'markdown'},
-                                                                 {"name":"\( k_p \)", "id": "kp", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                                 {"name":"$ k_b $", "id": "kb", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
+                                                                 {"name":"$ k_p $", "id": "kp", 'type': 'numeric', 'format': Format(precision=3, scheme=Scheme.fixed)},
                                                                 ],
                                                         style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'minWidth': '40px', 'width': '40px', 'maxWidth': '40px', 'padding': '2px' },
                                                         style_table={'textAlign': 'center', 'maxHeight': 400},
@@ -1308,8 +1306,8 @@ app.layout = html.Div([
                                                     dash_table.DataTable(
                                                         id='tableFich2',
                                                         columns=[{"name":"Parity", "id": "parity"},
-                                                                 {"name":"\( t_b \)", "id": "tb"},
-                                                                 {"name":"\(\Delta T\)", "id": "DT"}
+                                                                 {"name":"$ t_b $", "id": "tb"},
+                                                                 {"name":"$\Delta T$", "id": "DT"}
                                                                 ],
                                                         style_cell={'textAlign': 'center', 'whiteSpace' : 'normal', 'minWidth': '40px', 'width': '40px', 'maxWidth': '40px', 'padding': '2px' },
                                                         style_table={'textAlign': 'center', 'maxHeight': 400},
@@ -1422,7 +1420,6 @@ app.layout = html.Div([
                                             dcc.Graph(
                                                 id = 'graphHist',    
                                                 figure=hist_graph(hist_Var,'G123'),
-                                                mathjax=True,
                                                             config={
                                                                'displayModeBar': False},
                                                             style={'margin': '0px','margin-top': '7px','margin-right': '7px',
@@ -1434,19 +1431,19 @@ app.layout = html.Div([
                                html.Div(
                                     [
                                             dcc.RadioItems(id = 'input-radio-button',
-                                                                  options = [dict(label = '\( k_{b}^{1} \)', value = 'kb1'),
-                                                                             dict(label = '\( k_{b}^{2} \)', value = 'kb2'),
-                                                                             dict(label = '\( k_{b}^{3} \)', value = 'kb3'),
-                                                                             dict(label = '\( k_{p}^{1} \)', value = 'kp1'),
-                                                                             dict(label = '\( k_{p}^{2} \)', value = 'kp2'),
-                                                                             dict(label = '\( k_{p}^{3} \)', value = 'kp3'),
-                                                                             dict(label = '\( RSE \)', value = 'RSS'),
-                                                                             dict(label = '\( t_{b}^{1} \)', value = 'tb1'),
-                                                                             dict(label = '\( t_{b}^{2} \)', value = 'tb2'),
-                                                                             dict(label = '\( t_{b}^{3} \)', value = 'tb3'),
-                                                                             dict(label = '\( \Delta T^1 \)', value = 'DeltaT1'),
-                                                                             dict(label = '\( \Delta T^2 \)', value = 'DeltaT2'),
-                                                                             dict(label = '\( \Delta T^3 \)', value = 'DeltaT3')
+                                                                  options = [dict(label = '$ k_{b}^{1} $', value = 'kb1'),
+                                                                             dict(label = '$ k_{b}^{2} $', value = 'kb2'),
+                                                                             dict(label = '$ k_{b}^{3} $', value = 'kb3'),
+                                                                             dict(label = '$ k_{p}^{1} $', value = 'kp1'),
+                                                                             dict(label = '$ k_{p}^{2} $', value = 'kp2'),
+                                                                             dict(label = '$ k_{p}^{3} $', value = 'kp3'),
+                                                                             dict(label = '$ RSE $', value = 'RSS'),
+                                                                             dict(label = '$ t_{b}^{1} $', value = 'tb1'),
+                                                                             dict(label = '$ t_{b}^{2} $', value = 'tb2'),
+                                                                             dict(label = '$ t_{b}^{3} $', value = 'tb3'),
+                                                                             dict(label = '$ \Delta T^1 $', value = 'DeltaT1'),
+                                                                             dict(label = '$ \Delta T^2 $', value = 'DeltaT2'),
+                                                                             dict(label = '$ \Delta T^3 $', value = 'DeltaT3')
                                                                             ],
                                                                   value = 'RSS',
                                           labelStyle={"padding-left": "10px",'display': 'block','margin-top': '4px',},
@@ -1523,7 +1520,6 @@ app.layout = html.Div([
                                     children=[  
                                                 dcc.Graph(id='graphHeat',
                                                             figure=heat_plot('G123'),
-                                                            mathjax=True,
                                                             config={
                                                                'displayModeBar': False},
                                                             style={'margin': '0px','margin-top': '7px','margin-right': '7px',
@@ -1598,7 +1594,6 @@ app.layout = html.Div([
                                     children=[  
                                                 dcc.Graph(id='Scatter-graph',
                                                             figure=scatter_plot(),
-                                                            mathjax=True,
                                                             config={
                                                                'displayModeBar': False},
                                                             style={'margin': '0px','margin-top': '7px','margin-right': '7px',
